@@ -7,13 +7,19 @@ echo WAITING FOR PDB > lock.tmp
 del *.ilk
 
 REM compile engine
-cl -Zi ../src/*.c ../src/utils/*.c /c /I ../include /EHsc -nologo /Wall /D "_CRT_SECURE_NO_DEPRECATE=1" /wd4081 /wd4820
+set sources=..\src\*.c ..\src\platform\*.c ..\src\utils\*.c 
+set warnings_to_ignore=-wd4201 -wd4116 -wd4101 -wd4103 -wd4081 -wd4204 -wd4255 -wd4668 -wd4820 -wd4100 -wd4189 -wd4711 -wd4710 -wd4101 -wd4296 -wd4311 -wd4115 -wd4702 -wd4456 -wd4555
+set flags=-nologo  -Zi -O2 -FC -W1 -DDEVELOPMENT=0 -DPROFILER=0 %warnings_to_ignore%
+
+REM cl -nologo -Zi %warnings_to_ignore% /Tc %sources% /I ../include /link ws2_32.lib 
+
+cl %sources% %flags% /c /I ../include /D "_CRT_SECURE_NO_DEPRECATE=1" 
 lib *.obj /OUT:d3d11_motor.lib /NOLOGO
-link *.obj /DLL /OUT:d3d11_motor.dll /DEBUG /NOLOGO
+link *.obj user32.lib gdi32.lib /DLL /OUT:d3d11_motor.dll /DEBUG /NOLOGO
 
 REM compile app
-set OUT=demo.exe
-cl -Zi /Fe%OUT% -nologo -O2 -FC -W0 ../app/main.c /I ../include /link d3d11_motor.lib /SUBSYSTEM:CONSOLE
+set out=demo.exe
+cl -Zi /Fe%out% -nologo -O2 -FC -W0 ../app/main.c /I ../include /link d3d11_motor.lib user32.lib gdi32.lib  /SUBSYSTEM:CONSOLE
 
 del lock.tmp
 del *.obj

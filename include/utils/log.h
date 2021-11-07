@@ -17,7 +17,7 @@ char* get_asctime(void);
 #define ERROR_BUFFER_SIZE   2048*4
 
 char error_buf[ERROR_BUFFER_SIZE];
-char debug_str[ERROR_BUFFER_SIZE];
+char error_str[ERROR_BUFFER_SIZE];
 
 char warning_buf[WARNING_BUFFER_SIZE];
 char warning_str[WARNING_BUFFER_SIZE];
