@@ -7,9 +7,9 @@ echo WAITING FOR PDB > lock.tmp
 del *.ilk
 
 REM compile engine
-cl -Zi ../src/*.c /c /I ../include /EHsc 
-lib *.obj /OUT:d3d11_motor.lib
-link *.obj /DLL /OUT:d3d11_motor.dll /DEBUG
+cl -Zi ../src/*.c /c /I ../include /EHsc -nologo
+lib *.obj /OUT:d3d11_motor.lib /NOLOGO
+link *.obj /DLL /OUT:d3d11_motor.dll /DEBUG /NOLOGO
 
 set OUT=demo.exe
 REM compile app
