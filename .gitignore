@@ -1,0 +1,10 @@
+.vs
+*.sublime-project
+*.sublime-workspace
+
+build
+
+*.exe
+*.lib
+*.pdb
+*.ilk
