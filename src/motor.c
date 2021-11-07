@@ -20,9 +20,9 @@ void motor_process_events() {
 }
 
 void motor_close() {
-    printf("Closing engine...\n");
+    log("Closing engine...\n");
 
-    printf("Closing graphics manager...\n");
+    log("Closing graphics manager...\n");
     graphics_close();
 }
 

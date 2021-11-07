@@ -2,6 +2,7 @@
 #define MOTOR_H
 
 /* Defines. */
+#define WIN32_LEAN_AND_MEAN
 
 /* Standart includes. */
 

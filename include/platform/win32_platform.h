@@ -2,7 +2,8 @@
 #define MOTOR_WIN32_PLATFORM
 
 /* Engine includes. */
-#include "motor.h"
+#include "utils/utils.h"
+#include "utils/log.h"
 
 /* Windows includes. */
 #include <windows.h>

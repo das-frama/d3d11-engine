@@ -1,5 +1,7 @@
 #include <motor.h>
 
+#include <stdlib.h>
+
 int main() {
 	motor_init("Hello", 1920, 1080);
 

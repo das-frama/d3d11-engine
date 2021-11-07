@@ -1,6 +1,10 @@
 #include "graphics.h"
+#include "platform/win32_platform.h"
+#include "renderer/d3d11_renderer.h"
 
-static HWND window;
+static Renderer* renderer = NULL;
+
+HWND window;
 
 void graphics_init(int w, int h) {
 	log("win32 initialization...");
@@ -14,15 +18,21 @@ void graphics_init(int w, int h) {
 
     // Init d3d11.
     log("d3d11 initialization...");
+    renderer = d3d11_init(w, h);
 }
 
 void graphics_close() {
-    // d3d11_close();
+    log("closing d3d11...");
+    d3d11_close(renderer);
+
+    log("closing win32...");
     win32_close(window);
 }
 
 void graphics_window_update() {
     win32_broadcast();
+
+    d3d11_present(renderer, true);
 }
 
 HWND graphics_get_window() {

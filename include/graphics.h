@@ -2,8 +2,6 @@
 #define MOTOR_GRAPHICS_H
 
 /* Engine includes. */
-#include "motor.h"
-#include "platform/win32_platform.h"
 
 /* Windows includes. */
 #include <windows.h>
