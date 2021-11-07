@@ -1,6 +1,7 @@
 #include "motor.h"
 
-void motor_init(const char* core_asset_path) {
-	printf("Hello from motor init!!!\n");
-	printf("Let's debug this.\n");
+bool running = false;
+
+void motor_init(const char* core_asset_path, int w, int h) {
+	log("Starting motor with %dx%d...", w, h);
 }

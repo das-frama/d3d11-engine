@@ -7,13 +7,13 @@ echo WAITING FOR PDB > lock.tmp
 del *.ilk
 
 REM compile engine
-cl -Zi ../src/*.c /c /I ../include /EHsc -nologo
+cl -Zi ../src/*.c ../src/utils/*.c /c /I ../include /EHsc -nologo /Wall /D "_CRT_SECURE_NO_DEPRECATE=1" /wd4081 /wd4820
 lib *.obj /OUT:d3d11_motor.lib /NOLOGO
 link *.obj /DLL /OUT:d3d11_motor.dll /DEBUG /NOLOGO
 
-set OUT=demo.exe
 REM compile app
-cl -Zi /Fe%OUT% -nologo -O2 -FC -WX ../app/main.c /I ../include /link d3d11_motor.lib /SUBSYSTEM:CONSOLE
+set OUT=demo.exe
+cl -Zi /Fe%OUT% -nologo -O2 -FC -W0 ../app/main.c /I ../include /link d3d11_motor.lib /SUBSYSTEM:CONSOLE
 
 del lock.tmp
 del *.obj
