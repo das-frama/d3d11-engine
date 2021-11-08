@@ -1,12 +1,7 @@
 #ifndef MOTOR_WIN32_PLATFORM
 #define MOTOR_WIN32_PLATFORM
 
-/* Engine includes. */
-#include "utils/utils.h"
-#include "utils/log.h"
-
-/* Windows includes. */
-#include <windows.h>
+#include "engine.h"
 
 bool win32_init(void);
 void win32_close(HWND hwnd);

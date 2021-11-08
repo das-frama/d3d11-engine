@@ -1,21 +1,19 @@
 #ifndef MOTOR_LOG_H
 #define MOTOR_LOG_H
 
+/* Standard includes. */
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <time.h> 
 
-void error_print(const char* str);
-void warning_print(const char* str);
-void log_print(const char* str);
-void debug_print(const char* str);
-
-char* get_asctime(void);
-
-#define DEBUG_BUFFER_SIZE   2048*4
-#define WARNING_BUFFER_SIZE 2048*4
-#define LOG_BUFFER_SIZE     2048*4
+/* Defines. */
 #define ERROR_BUFFER_SIZE   2048*4
+#define WARNING_BUFFER_SIZE 2048*4
+#define DEBUG_BUFFER_SIZE   2048*4
+#define LOG_BUFFER_SIZE     2048*4
 
+/* Globals. */
 char error_buf[ERROR_BUFFER_SIZE];
 char error_str[ERROR_BUFFER_SIZE];
 
@@ -28,6 +26,16 @@ char log_str[LOG_BUFFER_SIZE];
 char debug_buf[DEBUG_BUFFER_SIZE];
 char debug_str[DEBUG_BUFFER_SIZE];
 
+/* Procedures. */
+void error_print(const char* str);
+void warning_print(const char* str);
+void debug_print(const char* str);
+void log_print(const char* str);
+
+/* Functions. */
+char* get_asctime(void);
+
+/* Macroses. */
 #define error(MSG, ...) {\
 	snprintf(error_str, ERROR_BUFFER_SIZE-1, "[error] (%s:%s:%i) ", __FILE__, __func__, __LINE__); \
 	snprintf(error_buf, ERROR_BUFFER_SIZE-1, MSG, ##__VA_ARGS__); \

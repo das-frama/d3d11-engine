@@ -1,9 +1,6 @@
 #include "utils/log.h"
 
-#include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
-
+/* Procedures. */
 void error_print(const char* str) {
 	fprintf(stderr, "%s\n", str); fflush(stdout);
 	// print to log file.
@@ -24,7 +21,8 @@ void log_print(const char* str) {
 	// print to log file.
 }
 
-char* get_asctime(void) {
+/* Functions. */
+char* get_asctime() {
 	time_t rawtime;
 	struct tm tinfo;
 

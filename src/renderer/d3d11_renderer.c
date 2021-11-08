@@ -1,7 +1,5 @@
 #include "renderer/d3d11_renderer.h"
 
-#include <stdlib.h>
-
 #define SAFE_RELEASE(release, obj) if (obj) release##_Release(obj)
 
 extern HWND window;

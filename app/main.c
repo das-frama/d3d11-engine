@@ -1,17 +1,19 @@
 #include <motor.h>
 
-#include <stdlib.h>
-
 int main() {
-	motor_init("Hello", 1920, 1080);
+	motor_init("Hello", 1440, 900);
+
+	// asset_load();
 
 	while(motor_running()) {
-		motor_begin_frame();
+		frame_begin();
+
         motor_process_events();
-        motor_end_frame();
+
+        frame_end();
 	}
 
 	motor_close();
 
-	return EXIT_SUCCESS;
+	return 0;
 }

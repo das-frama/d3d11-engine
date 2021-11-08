@@ -1,10 +1,7 @@
 #ifndef MOTOR_GRAPHICS_H
 #define MOTOR_GRAPHICS_H
 
-/* Engine includes. */
-
-/* Windows includes. */
-#include <windows.h>
+#include "engine.h"
 
 void graphics_init(int w, int h);
 void graphics_close(void);
