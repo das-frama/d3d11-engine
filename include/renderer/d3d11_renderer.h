@@ -23,19 +23,20 @@ typedef struct {
 	IDXGISwapChain* swap_chain;
 	ID3D11RenderTargetView* rtv;
 	ID3D11DepthStencilView* dsv;
-} Renderer;
+} renderer;
 
-Renderer* d3d11_init(int w, int h);
-void d3d11_close(Renderer*);
+renderer* d3d11_init(int w, int h);
+void d3d11_close(renderer*);
 
-void d3d11_init_rasterizer_state(Renderer*);
-void d3d11_set_rasterizer_state(Renderer*, bool cull_front);
-void d3d11_create_swap_chain(Renderer*, int w, int h);
-void d3d11_reload_buffers(Renderer*, int w, int h);
+void d3d11_create_device(renderer* r);
+void d3d11_create_rasterizer_state(renderer*);
+void d3d11_create_swap_chain(renderer*, int w, int h);
 
-void d3d11_clear_render_target_color(Renderer*, float r, float g, float b, float a);
-void d3d11_set_viewport_size(Renderer*, int w, int h);
+void d3d11_reload_buffers(renderer*, int w, int h);
+void d3d11_set_rasterizer_state(renderer*, bool cull_front);
+void d3d11_clear_render_target_color(renderer*, float r, float g, float b, float a);
+void d3d11_set_viewport_size(renderer*, int w, int h);
 
-void d3d11_present(Renderer*, bool vsync);
+void d3d11_present(renderer*, bool vsync);
 
 #endif // MOTOR_D3D11_RENDERER

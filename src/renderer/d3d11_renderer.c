@@ -6,33 +6,14 @@
 
 extern HWND window;
 
-Renderer* d3d11_init(int w, int h) {
-	Renderer* r = malloc(sizeof(Renderer));
-    ZeroMemory(r, sizeof(Renderer));  
+renderer* d3d11_init(int w, int h) {
+	renderer* r = malloc(sizeof(renderer));
 
-    HRESULT hr = D3D11CreateDevice(
-    	NULL, D3D_DRIVER_TYPE_HARDWARE, 
-    	NULL, 0, NULL, 0, 
-    	D3D11_SDK_VERSION, &r->d3d_device, NULL, &r->imm_context
-	);
-    if (FAILED(hr)) {
-        error("d3d11 :: D3D11CreateDevice error");
-    }
+    // Create device.
+    d3d11_create_device(r);
 
-    // hr = ID3D11Device_QueryInterface(r->d3d_device, IID_IDXGIDevice,(void **) &r->dxgi_device);
-    // if (FAILED(hr)) {
-    //     error("d3d11 :: ID3D11DeviceContext_QueryInterface error");
-    // }
-    hr = CreateDXGIFactory(&IID_IDXGIFactory,(void **) &r->dxgi_factory);
-    if (FAILED(hr)) {
-        error("d3d11 :: CreateDXGIFactory error");
-    }
-    // r->d3d_device->QueryInterface(&IID_IDXGIDevice, (void **) &r->dxgi_device);
-    // r->dxgi_device->GetParent(&IID_IDXGIAdapter, (void **) &r->dxgi_adapter);
-    // r->dxgi_adapter->GetParent(&IID_IDXGIFactory, (void **) &r->dxgi_factory);
-
-    // Init rasterizer state.
-    d3d11_init_rasterizer_state(r);
+    // Create rasterizer state.
+    d3d11_create_rasterizer_state(r);
 
     // Create swap chain.
     d3d11_create_swap_chain(r, w, h);
@@ -46,7 +27,7 @@ Renderer* d3d11_init(int w, int h) {
     return r;
 }
 
-void d3d11_close(Renderer* r) {
+void d3d11_close(renderer* r) {
 	if (r->imm_context) {
         ID3D11DeviceContext1_ClearState(r->imm_context);
     }
@@ -61,7 +42,23 @@ void d3d11_close(Renderer* r) {
     SAFE_RELEASE(IDXGISwapChain, r->swap_chain);
 }
 
-void d3d11_init_rasterizer_state(Renderer* r) {
+void d3d11_create_device(renderer* r) {
+    HRESULT hr = D3D11CreateDevice(
+        NULL, D3D_DRIVER_TYPE_HARDWARE, 
+        NULL, 0, NULL, 0, 
+        D3D11_SDK_VERSION, &r->d3d_device, NULL, &r->imm_context
+    );
+    if (FAILED(hr)) {
+        error("d3d11 :: D3D11CreateDevice error");
+    }
+
+    hr = CreateDXGIFactory(&IID_IDXGIFactory,(void **) &r->dxgi_factory);
+    if (FAILED(hr)) {
+        error("d3d11 :: CreateDXGIFactory error");
+    }
+}
+
+void d3d11_create_rasterizer_state(renderer* r) {
     D3D11_RASTERIZER_DESC desc;
     ZeroMemory(&desc, sizeof(desc));
     desc.CullMode = D3D11_CULL_FRONT;
@@ -80,7 +77,7 @@ void d3d11_init_rasterizer_state(Renderer* r) {
     }
 }
 
-void d3d11_create_swap_chain(Renderer* r, int w, int h) {
+void d3d11_create_swap_chain(renderer* r, int w, int h) {
     DXGI_SWAP_CHAIN_DESC desc;
     desc.BufferCount = 1;
     desc.BufferDesc.Width = w;
@@ -102,7 +99,7 @@ void d3d11_create_swap_chain(Renderer* r, int w, int h) {
     }
 }
 
-void d3d11_reload_buffers(Renderer* r, int w, int h) {
+void d3d11_reload_buffers(renderer* r, int w, int h) {
     ID3D11Texture2D* buffer;
     HRESULT hr = IDXGISwapChain_GetBuffer(r->swap_chain, 0, &IID_ID3D11Texture2D, (void **)&buffer);
     if (FAILED(hr)) {
@@ -141,14 +138,14 @@ void d3d11_reload_buffers(Renderer* r, int w, int h) {
     }
 }
 
-void d3d11_clear_render_target_color(Renderer* renderer, float r, float g, float b, float a) {
+void d3d11_clear_render_target_color(renderer* renderer, float r, float g, float b, float a) {
     float clear_color[] = {r, g, b, a};
   	ID3D11DeviceContext_ClearRenderTargetView(renderer->imm_context, renderer->rtv, clear_color);
   	ID3D11DeviceContext_ClearDepthStencilView(renderer->imm_context, renderer->dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
     ID3D11DeviceContext_OMSetRenderTargets(renderer->imm_context, 1, &renderer->rtv, renderer->dsv);
 }
 
-void d3d11_set_viewport_size(Renderer* r, int w, int h) {
+void d3d11_set_viewport_size(renderer* r, int w, int h) {
     D3D11_VIEWPORT vp = {0};
     vp.Width = (float) w;
     vp.Height = (float) h;
@@ -158,7 +155,7 @@ void d3d11_set_viewport_size(Renderer* r, int w, int h) {
 	ID3D11DeviceContext_RSSetViewports(r->imm_context, 1, &vp);
 }
 
-void d3d11_present(Renderer* r, bool vsync) {
+void d3d11_present(renderer* r, bool vsync) {
 	IDXGISwapChain_Present(r->swap_chain, (int)vsync, NULL);
     // r->swap_chain->Present(vsync, NULL);
 }

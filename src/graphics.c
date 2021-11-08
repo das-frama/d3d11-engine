@@ -2,7 +2,7 @@
 #include "platform/win32_platform.h"
 #include "renderer/d3d11_renderer.h"
 
-static Renderer* renderer = NULL;
+static renderer* renderer = NULL;
 
 HWND window;
 
