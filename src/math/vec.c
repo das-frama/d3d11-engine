@@ -1,4 +1,4 @@
-#include "ds/vec.h"
+#include "math/vec.h"
 
 /* Vec2 */
 

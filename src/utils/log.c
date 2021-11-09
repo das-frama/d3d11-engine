@@ -29,9 +29,6 @@ char* get_asctime() {
 	time(&rawtime);
 	localtime_s(&tinfo, &rawtime);
 
-	// char buffer[32];
-	// asctime_s(buffer, 32, &tinfo);
-
 	char* out = malloc(sizeof(char) * 32);
 	sprintf(out, "%02d.%02d.%d %02d:%02d:%02d", 
 		tinfo.tm_mday, tinfo.tm_mon + 1, tinfo.tm_year + 1900, tinfo.tm_hour, tinfo.tm_min, tinfo.tm_sec

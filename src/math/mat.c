@@ -1,5 +1,5 @@
-#include "ds/mat.h"
-#include "ds/vec.h"
+#include "math/mat.h"
+#include "math/vec.h"
 
 /* Standard includes. */
 #include <math.h>
