@@ -19,6 +19,12 @@ void graphics_init(int w, int h) {
     // Init d3d11.
     log("d3d11 initialization...");
     rnd = d3d11_init(w, h);
+
+    // Set vieport size.
+    d3d11_set_viewport_size(rnd, w, h);
+
+    // Set default rasterizer state.
+    d3d11_set_rasterizer_state(rnd, false);
 }
 
 void graphics_close() {
@@ -31,8 +37,6 @@ void graphics_close() {
 
 void graphics_window_update() {
     win32_broadcast();
-
-    d3d11_present(rnd, true);
 }
 
 HWND graphics_get_window() {
@@ -43,14 +47,28 @@ void graphics_get_window_size(int *w, int *h) {
     win32_get_window_size(window, w, h);
 }
 
-// void graphics_create_shaders() {
-//     void* shader_byte_code = (void*)g_vsmain;
-//     size_t size_shader = array_size(g_vsmain);
-//     rnd->vs = d3d11_create_vertex_shader(rnd, shader_byte_code, size_shader);
+void graphics_clear_screen(float r, float g, float b, float a) {
+    d3d11_clear_render_target_color(rnd, r, g, b, a);
+}
 
-//     shader_byte_code = (void*)g_psmain;
-//     size_shader = array_size(g_psmain);
-//     rnd->ps = d3d11_create_pixel_shader(rnd, shader_byte_code, size_shader);
+void graphics_draw_mesh(mesh* m, shader* s) {
+    // Set constant buffer.
 
-//     free(shader_byte_code);
-// }
+    // Set shaders.
+    d3d11_set_pixel_shader(rnd,  &s->ps);
+    d3d11_set_vertex_shader(rnd, &s->vs);
+
+    // Set texture.
+
+    // Set vertex and index buffers.
+    d3d11_set_vertex_buffer(rnd, &m->vb);
+    d3d11_set_index_buffer(rnd,  &m->ib);
+
+    // Draw.
+    d3d11_draw_indexed_triangle_list(rnd, m->ib.size_list, 0, 0);
+}
+
+void graphics_present() {
+    // Swap buffers.
+    d3d11_present(rnd, true);
+}

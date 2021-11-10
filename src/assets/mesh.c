@@ -1,5 +1,7 @@
 #include "assets/mesh.h"
 
+#include "utils/utils.h"
+
 #include "shaders/vs_shader.h"
 #include "shaders/ps_shader.h"
 
@@ -86,8 +88,6 @@ void mesh_load_obj(mesh* m, const char* filename) {
         arrlen(vertices), g_vsmain, array_count(g_vsmain)
     );
     m->ib = d3d11_create_index_buffer(rnd, indices, arrlen(indices));
-    // index_buffer ib = {0};
-    // ib = d3d11_create_index_buffer(rnd, indices, arrlen(indices));
 
     // free tinyobj.
     tinyobj_attrib_free(&attrib);

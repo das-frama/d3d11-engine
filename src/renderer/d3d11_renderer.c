@@ -1,5 +1,7 @@
 #include "renderer/d3d11_renderer.h"
 
+#include "utils/utils.h"
+
 #include <d3dcompiler.h>
 
 #define SAFE_RELEASE(release, obj) if (obj) release##_Release(obj)
@@ -8,6 +10,8 @@
 #define ID3DBlob_GetBufferSize(b) b->lpVtbl->GetBufferSize(b)
 
 extern HWND window;
+
+ID3DBlob* blob = NULL;
 
 renderer* d3d11_init(int w, int h) {
 	renderer* r = malloc(sizeof(renderer));
@@ -140,6 +144,14 @@ void d3d11_reload_buffers(renderer* r, int w, int h) {
     }
 }
 
+void d3d11_set_rasterizer_state(renderer* r, bool cull_front) {
+     if (cull_front) {
+        ID3D11DeviceContext_RSSetState(r->imm_context, r->cull_front_face);
+    } else {
+        ID3D11DeviceContext_RSSetState(r->imm_context, r->cull_back_face);
+    }
+}
+
 void d3d11_clear_render_target_color(renderer* renderer, float r, float g, float b, float a) {
     float clear_color[] = {r, g, b, a};
   	ID3D11DeviceContext_ClearRenderTargetView(renderer->imm_context, renderer->rtv, clear_color);
@@ -157,17 +169,13 @@ void d3d11_set_viewport_size(renderer* r, int w, int h) {
 	ID3D11DeviceContext_RSSetViewports(r->imm_context, 1, &vp);
 }
 
-void d3d11_present(renderer* r, bool vsync) {
-	IDXGISwapChain_Present(r->swap_chain, (int)vsync, NULL);
-}
-
 vertex_shader d3d11_create_vertex_shader(renderer* r, const void* shader_byte_code, size_t byte_code_size) {
     vertex_shader vs = {0};
-    vs.ptr = NULL;
+    vs.ptr = NULL;// malloc(sizeof(ID3D11VertexShader));
 
     HRESULT hr = ID3D11Device_CreateVertexShader(r->d3d_device, shader_byte_code, byte_code_size, NULL, &vs.ptr);
     if (FAILED(hr)) {
-        error("d3d11 :: CreateVertexShader error");
+        error("CreateVertexShader error");
     }
 
     return vs;
@@ -175,21 +183,32 @@ vertex_shader d3d11_create_vertex_shader(renderer* r, const void* shader_byte_co
 
 pixel_shader d3d11_create_pixel_shader(renderer* r, const void* shader_byte_code, size_t byte_code_size) {
     pixel_shader ps = {0};
-    ps.ptr = NULL;
+    ps.ptr = NULL; //malloc(sizeof(ID3D11PixelShader));
 
     HRESULT hr = ID3D11Device_CreatePixelShader(r->d3d_device, shader_byte_code, byte_code_size, NULL, &ps.ptr);
     if (FAILED(hr)) {
-        error("d3d11 :: CreateVertexShader error");
+        error("CreatePixelShader error");
     }
 
     return ps;
 }
 
+void d3d11_release_vertex_shader(vertex_shader* vs) {
+    SAFE_RELEASE(ID3D11VertexShader, vs->ptr);
+}
+
+void d3d11_release_pixel_shader(pixel_shader* ps) {
+    SAFE_RELEASE(ID3D11PixelShader, ps->ptr);
+}
+
+void d3d11_release_compiled_shaders() {
+    SAFE_RELEASE(ID3DBlob, blob);
+}
+
 void d3d11_compile_vertex_shader(const char* filename, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size) {
-    ID3DBlob* blob = NULL;
     ID3DBlob* error_blob = NULL;
     
-    HRESULT hr = D3DCompileFromFile(filename, NULL, NULL, entry_point_name, "vs_5_0", 0, 0, &blob, &error_blob);
+    HRESULT hr = D3DCompileFromFile(to_wch(filename), NULL, NULL, entry_point_name, "vs_5_0", 0, 0, &blob, &error_blob);
     if (FAILED(hr)) {
         error("D3DCompileFromFile error");
     }
@@ -197,19 +216,13 @@ void d3d11_compile_vertex_shader(const char* filename, const char* entry_point_n
     *shader_byte_code = ID3DBlob_GetBufferPointer(blob);
     *byte_code_size = ID3DBlob_GetBufferSize(blob);
 
-
-    SAFE_RELEASE(ID3DBlob, error_blob);
-    SAFE_RELEASE(ID3DBlob, blob);
+    SAFE_RELEASE(ID3DBlob, error_blob);   
 }
 
-void d3d11_compile_pixel_shader(
-    const char* filename, const char* entry_point_name, 
-    void** shader_byte_code, size_t* byte_code_size) 
-{
-    ID3DBlob* blob = NULL;
+void d3d11_compile_pixel_shader(const char* filename, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size) {
     ID3DBlob* error_blob = NULL;
 
-    HRESULT hr = D3DCompileFromFile(filename, NULL, NULL, 
+    HRESULT hr = D3DCompileFromFile(to_wch(filename), NULL, NULL, 
         entry_point_name, "ps_5_0", 0, 0, &blob, &error_blob);
     if (FAILED(hr)) {
         error("D3DCompileFromFile error");
@@ -219,7 +232,14 @@ void d3d11_compile_pixel_shader(
     *byte_code_size = ID3DBlob_GetBufferSize(blob);
 
     SAFE_RELEASE(ID3DBlob, error_blob);
-    SAFE_RELEASE(ID3DBlob, blob);
+}
+
+void d3d11_set_vertex_shader(renderer* r, vertex_shader* vs) {
+    ID3D11DeviceContext_VSSetShader(r->imm_context, vs->ptr, NULL, 0);
+}
+
+void d3d11_set_pixel_shader(renderer* r, pixel_shader* ps) {
+    ID3D11DeviceContext_PSSetShader(r->imm_context, ps->ptr, NULL, 0);
 }
 
 vertex_buffer d3d11_create_vertex_buffer(renderer* r, void* vertices, size_t size_vertex, 
@@ -287,4 +307,24 @@ index_buffer d3d11_create_index_buffer(renderer* r, void* indices, size_t size_l
     }
 
     return ib;
+}
+
+void d3d11_set_vertex_buffer(renderer* r, vertex_buffer* vb) {
+    size_t stride = vb->size_vertex;
+    size_t offset = 0;
+    ID3D11DeviceContext_IASetVertexBuffers(r->imm_context, 0, 1, &vb->buffer, &stride, &offset);
+    ID3D11DeviceContext_IASetInputLayout(r->imm_context, vb->input_layout);
+}
+
+void d3d11_set_index_buffer(renderer* r, index_buffer* ib) {
+    ID3D11DeviceContext_IASetIndexBuffer(r->imm_context, ib->buffer, DXGI_FORMAT_R32_UINT, 0);
+}
+
+void d3d11_draw_indexed_triangle_list(renderer* r, size_t index_count, size_t start_vertex_index, size_t start_index_location) {
+    ID3D11DeviceContext_IASetPrimitiveTopology(r->imm_context, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    ID3D11DeviceContext_DrawIndexed(r->imm_context, index_count, start_index_location, start_vertex_index);
+}
+
+void d3d11_present(renderer* r, bool vsync) {
+    IDXGISwapChain_Present(r->swap_chain, (int)vsync, NULL);
 }

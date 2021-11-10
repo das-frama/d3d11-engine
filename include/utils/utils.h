@@ -33,4 +33,6 @@ typedef unsigned int uint;
 
 #define array_count(a) (sizeof(a) / sizeof((a)[0]))
 
+const wchar_t* to_wch(const char *c);
+
 #endif // MOTOR_UTILS_H

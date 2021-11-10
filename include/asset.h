@@ -3,8 +3,6 @@
 
 #include "engine.h"
 
-#include "assets/mesh.h"
-
 typedef struct {
 	fpath path;
 	void* ptr;

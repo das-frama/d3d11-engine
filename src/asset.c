@@ -1,5 +1,8 @@
 #include "asset.h"
 
+#include "assets/mesh.h"
+#include "assets/shader.h"
+
 #include "vendor/stb_ds.h"
 
 static fpath core_asset_path;
@@ -32,6 +35,10 @@ asset* asset_load(const char* asset_path) {
 		mesh* m = mesh_new();
 		mesh_load_obj(m, a->path.str);
 		a->ptr = (void*)m;
+	} else if (strcmp(file_extension(a->path.str), "fx") == 0) {
+		shader* s = shader_new();
+		shader_load_fx(s, a->path.str);
+		a->ptr = (void*)s;
 	} else {
 		error("Loading of %s is not implemented yet.", a->path.str);
 	}
