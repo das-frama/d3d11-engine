@@ -1,6 +1,11 @@
 #include "renderer/d3d11_renderer.h"
 
+#include <d3dcompiler.h>
+
 #define SAFE_RELEASE(release, obj) if (obj) release##_Release(obj)
+#define ID3DBlob_GetBufferPointer(b) b->lpVtbl->GetBufferPointer(b)
+#define ID3DBlob_Release(b) b->lpVtbl->Release(b)
+#define ID3DBlob_GetBufferSize(b) b->lpVtbl->GetBufferSize(b)
 
 extern HWND window;
 
@@ -30,7 +35,6 @@ void d3d11_close(renderer* r) {
         ID3D11DeviceContext1_ClearState(r->imm_context);
     }
 
-    // SAFE_RELEASE(IDXGIDevice, r->dxgi_device);
     SAFE_RELEASE(IDXGIFactory, r->dxgi_factory);
     SAFE_RELEASE(ID3D11Device, r->d3d_device);
     SAFE_RELEASE(ID3D11RasterizerState, r->cull_front_face);
@@ -155,5 +159,132 @@ void d3d11_set_viewport_size(renderer* r, int w, int h) {
 
 void d3d11_present(renderer* r, bool vsync) {
 	IDXGISwapChain_Present(r->swap_chain, (int)vsync, NULL);
-    // r->swap_chain->Present(vsync, NULL);
+}
+
+vertex_shader d3d11_create_vertex_shader(renderer* r, const void* shader_byte_code, size_t byte_code_size) {
+    vertex_shader vs = {0};
+    vs.ptr = NULL;
+
+    HRESULT hr = ID3D11Device_CreateVertexShader(r->d3d_device, shader_byte_code, byte_code_size, NULL, &vs.ptr);
+    if (FAILED(hr)) {
+        error("d3d11 :: CreateVertexShader error");
+    }
+
+    return vs;
+}
+
+pixel_shader d3d11_create_pixel_shader(renderer* r, const void* shader_byte_code, size_t byte_code_size) {
+    pixel_shader ps = {0};
+    ps.ptr = NULL;
+
+    HRESULT hr = ID3D11Device_CreatePixelShader(r->d3d_device, shader_byte_code, byte_code_size, NULL, &ps.ptr);
+    if (FAILED(hr)) {
+        error("d3d11 :: CreateVertexShader error");
+    }
+
+    return ps;
+}
+
+void d3d11_compile_vertex_shader(const char* filename, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size) {
+    ID3DBlob* blob = NULL;
+    ID3DBlob* error_blob = NULL;
+    
+    HRESULT hr = D3DCompileFromFile(filename, NULL, NULL, entry_point_name, "vs_5_0", 0, 0, &blob, &error_blob);
+    if (FAILED(hr)) {
+        error("D3DCompileFromFile error");
+    }
+
+    *shader_byte_code = ID3DBlob_GetBufferPointer(blob);
+    *byte_code_size = ID3DBlob_GetBufferSize(blob);
+
+
+    SAFE_RELEASE(ID3DBlob, error_blob);
+    SAFE_RELEASE(ID3DBlob, blob);
+}
+
+void d3d11_compile_pixel_shader(
+    const char* filename, const char* entry_point_name, 
+    void** shader_byte_code, size_t* byte_code_size) 
+{
+    ID3DBlob* blob = NULL;
+    ID3DBlob* error_blob = NULL;
+
+    HRESULT hr = D3DCompileFromFile(filename, NULL, NULL, 
+        entry_point_name, "ps_5_0", 0, 0, &blob, &error_blob);
+    if (FAILED(hr)) {
+        error("D3DCompileFromFile error");
+    }
+
+    *shader_byte_code = ID3DBlob_GetBufferPointer(blob);
+    *byte_code_size = ID3DBlob_GetBufferSize(blob);
+
+    SAFE_RELEASE(ID3DBlob, error_blob);
+    SAFE_RELEASE(ID3DBlob, blob);
+}
+
+vertex_buffer d3d11_create_vertex_buffer(renderer* r, void* vertices, size_t size_vertex, 
+    size_t size_list, void* shader_byte_code, size_t size_byte_shader) {
+    // vertex_buffer vb = malloc(sizeof(vertex_buffer));
+    // memset(vb, 0, sizeof(vertex_buffer));
+    // vb->size_vertex = size_vertex;
+    // vb->size_list = size_list;
+
+    vertex_buffer vb = {0};
+    vb.size_vertex = size_vertex;
+    vb.size_list = size_list;
+
+    D3D11_BUFFER_DESC buff_desc = { 0 };
+    buff_desc.Usage = D3D11_USAGE_DEFAULT;
+    buff_desc.ByteWidth = size_vertex * size_list;
+    buff_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    buff_desc.CPUAccessFlags = 0;
+    buff_desc.MiscFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA init_data = { 0 };
+    init_data.pSysMem = vertices;
+
+    HRESULT hr = ID3D11Device_CreateBuffer(r->d3d_device, &buff_desc, &init_data, &vb.buffer);
+    if (FAILED(hr)) {
+        error("CreateBuffer was not create successfully");
+    }
+
+    D3D11_INPUT_ELEMENT_DESC layout[] = {
+        // Semantic name - semantic index - format - input slot - aligned byte offset - input slot class - instance data step rate
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 20, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    };
+    size_t size_layout = ARRAYSIZE(layout);
+
+    hr = ID3D11Device_CreateInputLayout(r->d3d_device, layout, size_layout, shader_byte_code, size_byte_shader, &vb.input_layout);
+    if (FAILED(hr)) {
+        error("CreateInputLayout was not create successfully");
+    }
+
+    return vb;
+}
+
+index_buffer d3d11_create_index_buffer(renderer* r, void* indices, size_t size_list) {
+    // index_buffer ib = malloc(sizeof(index_buffer));
+    // memset(ib, 0, sizeof(index_buffer));
+    // ib.size_list = size_list;
+    index_buffer ib = {0};
+    ib.size_list = size_list;
+
+    D3D11_BUFFER_DESC buff_desc = { 0 };
+    buff_desc.Usage = D3D11_USAGE_DEFAULT;
+    buff_desc.ByteWidth = sizeof(size_t) * size_list;
+    buff_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    buff_desc.CPUAccessFlags = 0;
+    buff_desc.MiscFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA init_data;
+     init_data.pSysMem = indices;
+
+    HRESULT hr = ID3D11Device_CreateBuffer(r->d3d_device, &buff_desc, &init_data, &ib.buffer);
+    if (FAILED(hr)) {
+        error("IndexBuffer was not created successfully");
+    }
+
+    return ib;
 }

@@ -1,13 +1,11 @@
 #ifndef MOTOR_ENGINE_H
 #define MOTOR_ENGINE_H
 
-/* Defines. */
-#define FILE_PATH_MAX 512
-
 /* Standard includes. */
 #include <stdio.h> // printf, sprint, snprintf
-#include <stdlib.h> // malloc, free
-#include <string.h> // strcpy
+#include <stdlib.h> // malloc, free, realpath
+#include <string.h> // strcpy, strcat
+#include <assert.h> // assert
 
 /* Windows includes. */
 #define WIN32_LEAN_AND_MEAN
@@ -22,16 +20,29 @@
 #include "utils/utils.h"
 #include "utils/log.h"
 
+/* Math. */
+#include "math/vec.h"
+#include "math/mat.h"
+
+/* Defines. */
+#define PATH_MAX 512
+
+#ifdef _WIN32 
+#define SEPARATOR "\\"
+#else
+#define SEPARATOR "/"
+#endif
+
 /* Common structs. */
 typedef struct {
-	char ptr[FILE_PATH_MAX];
-} file_path;
+    char str[PATH_MAX];
+} fpath;
 
 /* Engine core. */
 void frame_begin(void);
 void frame_end(void);
 
 /* Helpers. */
-file_path file_path_new(const char* path);
+fpath fpath_new(const char* path);
 
 #endif // MOTOR_ENGINE_H

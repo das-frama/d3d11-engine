@@ -11,4 +11,6 @@ void graphics_get_window_size(int* w, int* h);
 
 void graphics_window_update(void);
 
+// void graphics_create_shaders(void);
+
 #endif // MOTOR_GRAPHICS_H

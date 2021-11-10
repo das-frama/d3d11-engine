@@ -5,20 +5,20 @@
 #include <math.h>
 #include <memory.h>
 
-mat4 mat4_new() {
-	mat4 m;
-	memset(m, 0, sizeof(float) * 16);
+mat4 mat4_zero() {
+	mat4 m = {0};
+    memset(&m, 0, sizeof(float) * 16);
 	return m;
 }
 
-mat4 mat4_new(float mat[4][4]) {
-	mat4 m;
-	m.mat = mat;
-	return m;
-}
+// mat4 mat4_new(float mat[4][4]) {
+// 	mat4 m = {0};
+// 	m.mat = mat;
+// 	return m;
+// }
 
 mat4 mat_id() {
-	mat4 m = mat4_new();
+	mat4 m = mat4_zero();
 
 	m.mat[0][0] = 1.0f;
 	m.mat[1][1] = 1.0f;
@@ -72,7 +72,7 @@ mat4 mat4_rotation_z(mat4 m, float z) {
 }
 
 mat4 mat4_mul(mat4 m1, mat4 m2) {
-    mat4 m = mat_new();
+    mat4 m = mat4_zero();
 
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
@@ -91,9 +91,9 @@ float mat4_det(mat4 m) {
     float det = 0.0f;
     vec4 minor, v1, v2, v3;
 
-    v1 = vec4(m.mat[0][0], m.mat[1][0], m.mat[2][0], m.mat[3][0]);
-    v2 = vec4(m.mat[0][1], m.mat[1][1], m.mat[2][1], m.mat[3][1]);
-    v3 = vec4(m.mat[0][2], m.mat[1][2], m.mat[2][2], m.mat[3][2]);
+    v1 = vec4_new(m.mat[0][0], m.mat[1][0], m.mat[2][0], m.mat[3][0]);
+    v2 = vec4_new(m.mat[0][1], m.mat[1][1], m.mat[2][1], m.mat[3][1]);
+    v3 = vec4_new(m.mat[0][2], m.mat[1][2], m.mat[2][2], m.mat[3][2]);
 
     minor = vec4_cross(v1, v2, v3);
     det = -(m.mat[0][3] * minor.x + m.mat[1][3] * minor.y + m.mat[2][3] * minor.z + m.mat[3][3] * minor.w);

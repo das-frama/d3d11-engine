@@ -1,14 +1,14 @@
 #ifndef MOTOR_MAT_H
 #define MOTOR_MAT_H
 
-#include "vec.h";
+#include "vec.h"
 
-struct mat4 {
+typedef struct {
     float mat[4][4];
-};
+} mat4;
 
-mat4 mat4_new(void);
-mat4 mat4_new(float mat[4][4]);
+mat4 mat4_zero(void);
+// mat4 mat4_new(float mat[4][4]);
 mat4 mat4_id(void);
 
 mat4 mat4_translation(mat4 m, vec3 v);

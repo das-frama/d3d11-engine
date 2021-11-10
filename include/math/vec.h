@@ -14,17 +14,17 @@ typedef struct {
 } vec4;
 
 
-vec2 vec2_new(void);
+vec2 vec2_zero(void);
 vec2 vec2_new(float, float);
 vec2 vec2_add(vec2, vec2);
 vec2 vec2_mul(vec2, float);
 
-vec3 vec3_new(void);
+vec3 vec3_zero(void);
 vec3 vec3_new(float, float, float);
 vec3 vec3_add(vec3, vec3);
 vec3 vec3_mul(vec3, float);
 
-vec4 vec4_new(void);
+vec4 vec4_zero(void);
 vec4 vec4_new(float, float, float, float);
 vec4 vec4_add(vec4, vec4);
 vec4 vec4_mul(vec4, float);

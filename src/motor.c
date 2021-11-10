@@ -8,6 +8,9 @@ void motor_init(const char* core_asset_path, int w, int h) {
 	log("Init graphics...");
 	graphics_init(w, h);
 
+    log("Init assets...");
+    asset_init(core_asset_path);
+
 	running = true;
 }
 

@@ -3,7 +3,7 @@
 #include "platform/win32_platform.h"
 #include "renderer/d3d11_renderer.h"
 
-static renderer* rnd = NULL;
+renderer* rnd = NULL;
 HWND window = {0};
 
 void graphics_init(int w, int h) {
@@ -42,3 +42,15 @@ HWND graphics_get_window() {
 void graphics_get_window_size(int *w, int *h) {
     win32_get_window_size(window, w, h);
 }
+
+// void graphics_create_shaders() {
+//     void* shader_byte_code = (void*)g_vsmain;
+//     size_t size_shader = array_size(g_vsmain);
+//     rnd->vs = d3d11_create_vertex_shader(rnd, shader_byte_code, size_shader);
+
+//     shader_byte_code = (void*)g_psmain;
+//     size_shader = array_size(g_psmain);
+//     rnd->ps = d3d11_create_pixel_shader(rnd, shader_byte_code, size_shader);
+
+//     free(shader_byte_code);
+// }

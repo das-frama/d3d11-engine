@@ -20,6 +20,8 @@ typedef uint64_t u64;
 typedef float f32;
 typedef double f64;
 
+typedef unsigned int uint;
+
 #define MAX_U32 UINT32_MAX
 #define MIN_S16 INT16_MIN
 #define MAX_S16 INT16_MAX

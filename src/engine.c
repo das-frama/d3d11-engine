@@ -1,5 +1,11 @@
 #include "engine.h"
 
+#define STB_DS_IMPLEMENTATION
+#include "vendor/stb_ds.h"
+
+#define TINYOBJ_LOADER_C_IMPLEMENTATION
+#include "vendor/tinyobj_loader_c.h"
+
 static char frame_rate_string_var[12];
 
 static s32 frame_rate_var = 0;
@@ -33,10 +39,10 @@ void frame_end() {
     sprintf(frame_rate_string_var, "%i", frame_rate_var);
 }
 
-file_path file_path_new(const char* path) {
-    file_path p;
+fpath fpath_new(const char* path) {
+    fpath p;
 
-    strcpy_s(p.ptr, 512, path);
+    strcpy_s(p.str, PATH_MAX , path);
 
     return p;
 }

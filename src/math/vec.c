@@ -2,7 +2,7 @@
 
 /* Vec2 */
 
-vec2 vec2_new() {
+vec2 vec2_zero() {
 	return vec2_new(0, 0);
 }
 
@@ -28,7 +28,7 @@ vec2 vec2_mul(vec2 v, float num) {
 
 /* Vec3 */
 
-vec3 vec3_new() {
+vec3 vec3_zero() {
 	return vec3_new(0, 0, 0);
 }
 
@@ -57,7 +57,7 @@ vec3 vec3_mul(vec3 v, float num) {
 
 /* Vec4 */
 
-vec4 vec4_new() {
+vec4 vec4_zero() {
 	return vec4_new(0, 0, 0, 0);
 }
 
