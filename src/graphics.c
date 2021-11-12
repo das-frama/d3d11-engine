@@ -51,18 +51,20 @@ void graphics_clear_screen(float r, float g, float b, float a) {
     d3d11_clear_render_target_color(rnd, r, g, b, a);
 }
 
-void graphics_draw_mesh(mesh* m, shader* s) {
+void graphics_draw_mesh(mesh* m, shader* s, constant_buffer* cb) {
     // Set constant buffer.
-
-    // Set shaders.
-    d3d11_set_pixel_shader(rnd,  &s->ps);
-    d3d11_set_vertex_shader(rnd, &s->vs);
-
-    // Set texture.
+    d3d11_vs_set_constant_buffer(rnd, cb);
+    d3d11_ps_set_constant_buffer(rnd, cb);
 
     // Set vertex and index buffers.
     d3d11_set_vertex_buffer(rnd, &m->vb);
     d3d11_set_index_buffer(rnd,  &m->ib);
+
+    // Set shaders.
+    d3d11_set_vertex_shader(rnd, &s->vs);
+    d3d11_set_pixel_shader(rnd,  &s->ps);
+
+    // Set texture.
 
     // Draw.
     d3d11_draw_indexed_triangle_list(rnd, m->ib.size_list, 0, 0);
@@ -71,4 +73,12 @@ void graphics_draw_mesh(mesh* m, shader* s) {
 void graphics_present() {
     // Swap buffers.
     d3d11_present(rnd, true);
+}
+
+constant_buffer graphics_create_constant_buffer(size_t buffer_size) {
+    return d3d11_create_constant_buffer(rnd, buffer_size);
+}
+
+void graphics_update_constant_buffer(constant_buffer* cb, void* buffer) {
+    d3d11_update_constant_buffer(rnd, cb, buffer);
 }

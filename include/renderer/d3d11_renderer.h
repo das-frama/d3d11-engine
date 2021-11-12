@@ -3,10 +3,14 @@
 
 #include "engine.h"
 
+#include <windows.h>
+#include <d3d11_1.h>
+#include <dxgi1_6.h>
+
 typedef struct {
 	ID3D11Device* d3d_device;
 	ID3D11DeviceContext* imm_context;
-	IDXGIFactory* dxgi_factory;
+	ID3D11DeviceContext1* imm_context1;
 
 	ID3D11RasterizerState* cull_front_face;
 	ID3D11RasterizerState* cull_back_face;
@@ -15,6 +19,10 @@ typedef struct {
 	ID3D11RenderTargetView* rtv;
 	ID3D11DepthStencilView* dsv;
 } renderer;
+
+typedef struct {
+	ID3D11Buffer* buffer;
+} constant_buffer;
 
 typedef struct {
 	size_t size_vertex;
@@ -58,12 +66,18 @@ void d3d11_compile_pixel_shader(const char* filename, const char* entry_point_na
 void d3d11_set_vertex_shader(renderer* r, vertex_shader* vs);
 void d3d11_set_pixel_shader(renderer* r, pixel_shader* ps);
 
+constant_buffer d3d11_create_constant_buffer(renderer* r, size_t size_buffer);
+void d3d11_update_constant_buffer(renderer* r, constant_buffer* cb, void* buffer);
+void d3d11_vs_set_constant_buffer(renderer* r, constant_buffer* cb);
+void d3d11_ps_set_constant_buffer(renderer* r, constant_buffer* cb);
+
 vertex_buffer d3d11_create_vertex_buffer(renderer* r, void* vertices, size_t size_vertex, size_t size_list, void* shader_byte_code, size_t size_byte_shader);
 index_buffer d3d11_create_index_buffer(renderer* r, void* indices, size_t size_list);
 void d3d11_set_vertex_buffer(renderer* r, vertex_buffer* vb);
 void d3d11_set_index_buffer(renderer* r, index_buffer* ib);
 
-void d3d11_draw_indexed_triangle_list(renderer* r, size_t index_count, size_t start_vertex_index, size_t start_index_location);
+void d3d11_draw_indexed_triangle_list(renderer* r, size_t index_count, size_t start_index_location, size_t start_vertex_index);
+void d3d11_draw_triangle_strip(renderer* r, size_t vertex_count, size_t start_vertex_index);
 
 void d3d11_present(renderer*, bool vsync);
 

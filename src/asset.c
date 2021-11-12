@@ -39,6 +39,12 @@ asset* asset_load(const char* asset_path) {
 		shader* s = shader_new();
 		shader_load_fx(s, a->path.str);
 		a->ptr = (void*)s;
+	} else if (strcmp(file_extension(a->path.str), "hlsl") == 0) {
+		shader* s = shader_new();
+		// shader_load_hlsl(s, a->path.str, "vsmain");
+		// shader_load_hlsl(s, a->path.str, );
+
+		a->ptr = (void*)s;
 	} else {
 		error("Loading of %s is not implemented yet.", a->path.str);
 	}

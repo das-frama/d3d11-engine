@@ -1,5 +1,7 @@
 #include "math/vec.h"
 
+#include <stdarg.h>
+
 /* Vec2 */
 
 vec2 vec2_zero() {
@@ -40,11 +42,20 @@ vec3 vec3_new(float x, float y, float z) {
 	return v;
 }
 
-vec3 vec3_add(vec3 v1, vec3 v2) {
+vec3 vec3_add(int n, ...) {
+	va_list args;
+	va_start(args, n);
+
 	vec3 v;
-	v.x = v1.x + v2.x;
-	v.y = v1.y + v2.y;
-	v.z = v1.z + v2.z;
+	vec3 vv;
+	for (int i = 0; i < n; i++) {
+		vv = va_arg(args, vec3);
+		v.x += vv.x;
+		v.y += vv.y;
+		v.z += vv.z;
+	}
+
+	va_end(args);
 	return v;
 }
 

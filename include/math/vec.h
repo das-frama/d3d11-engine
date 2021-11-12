@@ -21,7 +21,7 @@ vec2 vec2_mul(vec2, float);
 
 vec3 vec3_zero(void);
 vec3 vec3_new(float, float, float);
-vec3 vec3_add(vec3, vec3);
+vec3 vec3_add(int n, ...);
 vec3 vec3_mul(vec3, float);
 
 vec4 vec4_zero(void);

@@ -18,16 +18,21 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 }
 
 bool win32_init() {
-	WNDCLASSA wc = {0};
-    wc.cbClsExtra = 0;
-    wc.cbWndExtra = 0;
-    wc.hbrBackground = (HBRUSH) COLOR_WINDOW;
+    WNDCLASSEX wc;
+    wc.cbClsExtra = NULL;
+    wc.cbSize = sizeof(WNDCLASSEX);
+    wc.cbWndExtra = NULL;
+    wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+    wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
     wc.hInstance = NULL;
-    wc.lpszClassName = "motor_engine";
-    wc.lpszMenuName = "";
-    wc.style = 0;
+    wc.lpszClassName = L"MyWindowClass";
+    wc.lpszMenuName = L"";
+    wc.style = NULL;
     wc.lpfnWndProc = &wnd_proc;
-    if (!RegisterClassA(&wc)) {
+
+    if (!RegisterClassEx(&wc)) {
         return false;
     }
 
@@ -39,8 +44,8 @@ void win32_close(HWND hwnd) {
 }
 
 HWND win32_create_window(int w, int h) {
-    return CreateWindowExA(
-            WS_EX_OVERLAPPEDWINDOW, "motor_engine", "motor_app",
+    return CreateWindowEx(
+            WS_EX_OVERLAPPEDWINDOW, L"MyWindowClass", L"My Game",
             WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, w, h,
             0, 0, 0, 0
     );

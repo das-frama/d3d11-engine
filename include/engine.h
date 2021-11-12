@@ -15,6 +15,7 @@
 #define D3D11_NO_HELPERS
 #define COBJMACROS
 #include <d3d11_1.h>
+#include <dxgi1_6.h>
 
 /* Utils. */
 #include "utils/utils.h"

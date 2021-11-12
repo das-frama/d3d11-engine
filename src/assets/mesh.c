@@ -3,7 +3,6 @@
 #include "utils/utils.h"
 
 #include "shaders/vs_shader.h"
-#include "shaders/ps_shader.h"
 
 #include <windows.h>
 #include <d3d11.h>
@@ -53,16 +52,19 @@ void mesh_load_obj(mesh* m, const char* filename) {
     	error("We are currently support only one shape");
     } 
 
-    vertex_mesh* vertices = NULL;
-    size_t* indices = NULL;
-    arrsetcap(vertices, attrib.num_faces);
-    arrsetcap(indices, attrib.num_face_num_verts);
+    vertex_mesh* vertices = malloc(sizeof(vertex_mesh) * attrib.num_vertices);
+    memset(vertices, 0, sizeof(vertex_mesh) * attrib.num_vertices);
 
+    uint* indices = malloc(sizeof(uint) * attrib.num_faces);
+    memset(vertices, 0, sizeof(uint) * attrib.num_faces);
+
+    size_t size_index = 0;
     for (size_t i = 0; i < attrib.num_face_num_verts; i++) {
         assert(attrib.face_num_verts[i] % 3 == 0);
 
-        for (size_t f = 0; f < (size_t)attrib.face_num_verts[i]; f++) {
-            tinyobj_vertex_index_t index = attrib.faces[i + f];
+        for (size_t j = 0; j < (size_t)attrib.face_num_verts[i]; j++) {
+            tinyobj_vertex_index_t index = attrib.faces[i * 3  + j];
+
             float vx = attrib.vertices[index.v_idx * 3 + 0];
             float vy = attrib.vertices[index.v_idx * 3 + 1];
             float vz = attrib.vertices[index.v_idx * 3 + 2];
@@ -79,15 +81,13 @@ void mesh_load_obj(mesh* m, const char* filename) {
             v.texcoord = vec2_new(tx, ty);
             v.normal = vec3_new(nx, ny, nz);
 
-            arrput(vertices, v);
-            arrput(indices, i + f);
+            vertices[index.v_idx] = v;
+            indices[size_index++] = (uint)index.v_idx;
         }
     }
-
-    m->vb = d3d11_create_vertex_buffer(rnd, vertices, sizeof(vertex_mesh), 
-        arrlen(vertices), g_vsmain, array_count(g_vsmain)
-    );
-    m->ib = d3d11_create_index_buffer(rnd, indices, arrlen(indices));
+  
+    m->vb = d3d11_create_vertex_buffer(rnd, vertices, sizeof(vertex_mesh), attrib.num_vertices, g_vsmain, _countof(g_vsmain));
+    m->ib = d3d11_create_index_buffer(rnd, indices, size_index);
 
     // free tinyobj.
     tinyobj_attrib_free(&attrib);

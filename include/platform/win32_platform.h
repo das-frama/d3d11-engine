@@ -3,6 +3,8 @@
 
 #include "engine.h"
 
+#include <windows.h>
+
 bool win32_init(void);
 void win32_close(HWND hwnd);
 

@@ -26,10 +26,21 @@ void shader_load_fx(shader* s, const char* fx_path) {
 	d3d11_compile_pixel_shader(fx_path, "psmain", &shader_byte_code, &byte_code_size);
 	s->ps = d3d11_create_pixel_shader(rnd, shader_byte_code, byte_code_size);
 	d3d11_release_compiled_shaders();
+}
 
-	// s->vs = malloc(sizeof(vertex_shader));
-	// memcpy(a->vs, &vs, sizeof(vertex_shader));
+void shader_load_hlsl(shader* s, const char* hlsl_path, const char* entry_point) {
+	void* shader_byte_code = NULL;
+	size_t byte_code_size = 0;
 
-	// s->ps = malloc(sizeof(pixel_shader));
-	// memcpy(a->ps, &ps, sizeof(pixel_shader));
+	// fpath path = abs_path(fpath_new(hlsl_path));
+
+	if (strcmp(entry_point, "psmain") == 0) {
+		d3d11_compile_pixel_shader(hlsl_path, entry_point, &shader_byte_code, &byte_code_size);
+		s->ps = d3d11_create_pixel_shader(rnd, shader_byte_code, byte_code_size);
+	} else if (strcmp(entry_point, "vsmain") == 0) {
+		d3d11_compile_vertex_shader(hlsl_path, entry_point, &shader_byte_code, &byte_code_size);
+		s->vs = d3d11_create_vertex_shader(rnd, shader_byte_code, byte_code_size);
+	}
+
+	d3d11_release_compiled_shaders();
 }

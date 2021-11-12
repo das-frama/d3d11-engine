@@ -12,8 +12,7 @@ set flags=-nologo -Zi -FC -W0 %warnings_to_ignore%
 set libs=user32.lib dxgi.lib d3d11.lib D3DCompiler.lib dxguid.lib
 
 REM Compile shaders.
-REM fxc /E vsmain /Fh ..\include\shaders\vs_shader.h /T vs_5_0 ..\assets\shader.fx
-REM fxc /E psmain /Fh ..\include\shaders\ps_shader.h /T ps_5_0 ..\assets\shader.fx
+rem fxc /E vsmain /Fh ..\include\shaders\vs_shader.h /T vs_5_0 ..\assets\vertex_shader.hlsl
 
 REM Compile engine.
 cl %sources% %flags% /c /I ../include /D "_CRT_SECURE_NO_DEPRECATE=1" 
@@ -24,7 +23,7 @@ REM Compile app.
 cl -Zi /Fedemo.exe -nologo -O2 -FC -W1 ../app/main.c /I ../include /link d3d11_motor.lib %libs% /SUBSYSTEM:CONSOLE
 
 REM create symlink to assets.
-REM mklink /D assets ..\app\assets
+rem mklink /D assets ..\app\assets
 
 del lock.tmp
 del *.obj
