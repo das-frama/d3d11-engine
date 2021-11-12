@@ -52,6 +52,8 @@ void graphics_clear_screen(float r, float g, float b, float a) {
 }
 
 void graphics_draw_mesh(mesh* m, shader* s, constant_buffer* cb) {
+    d3d11_set_rasterizer_state(rnd, false);
+
     // Set constant buffer.
     d3d11_vs_set_constant_buffer(rnd, cb);
     d3d11_ps_set_constant_buffer(rnd, cb);

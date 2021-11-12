@@ -39,6 +39,11 @@ void frame_end() {
     sprintf(frame_rate_string_var, "%i", frame_rate_var);
 }
 
+float frame_dt(void) {
+    return frame_delta_time;
+}
+
+
 fpath fpath_new(const char* path) {
     fpath p;
 

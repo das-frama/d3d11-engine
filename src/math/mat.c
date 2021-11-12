@@ -48,7 +48,7 @@ void mat4_rotate_y(mat4* m, float y) {
     m->mat[2][2] = cos(y);
 }
 
-void mat4_rotation_z(mat4* m, float z) {
+void mat4_rotate_z(mat4* m, float z) {
     m->mat[0][0] = cos(z);
     m->mat[0][1] = sin(z);
     m->mat[1][0] = -sin(z);

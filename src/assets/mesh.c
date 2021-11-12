@@ -1,14 +1,11 @@
 #include "assets/mesh.h"
 
 #include "utils/utils.h"
-
 #include "shaders/vs_shader.h"
+#include "vendor/tinyobj_loader_c.h"
 
 #include <windows.h>
 #include <d3d11.h>
-
-#include "vendor/stb_ds.h"
-#include "vendor/tinyobj_loader_c.h"
 
 extern renderer* rnd;
 
@@ -48,9 +45,9 @@ void mesh_load_obj(mesh* m, const char* filename) {
   		error("load obj file error: %s", filename);
     }
 
-    if (num_shapes > 1) {
-    	error("We are currently support only one shape");
-    } 
+    // if (num_shapes > 1) {
+    // 	error("We are currently support only one shape");
+    // } 
 
     vertex_mesh* vertices = malloc(sizeof(vertex_mesh) * attrib.num_vertices);
     memset(vertices, 0, sizeof(vertex_mesh) * attrib.num_vertices);

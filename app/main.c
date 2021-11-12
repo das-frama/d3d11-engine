@@ -29,21 +29,23 @@ void update_cam() {
 }
 
 int main() {
-	world_cam = mat4_new();
-	view_cam  = mat4_new();
-	proj_cam  = mat4_new();
+	// world_cam = mat4_new();
+	// view_cam  = mat4_new();
+	// proj_cam  = mat4_new();
 
 	motor_init("assets", w, h);
 
 	// load assets
-	asset* sphere_obj	  = asset_load("spaceship.obj");
+	asset* sphere_obj	  = asset_load("meshes\\house.obj");
 	shader* sphere_shader = shader_new();
-	shader_load_hlsl(sphere_shader, "assets\\vertex_shader.hlsl", "vsmain");
-	shader_load_hlsl(sphere_shader, "assets\\pixel_shader.hlsl", "psmain");
+	shader_load_hlsl(sphere_shader, "assets\\shaders\\vertex_shader.hlsl", "vsmain");
+	shader_load_hlsl(sphere_shader, "assets\\shaders\\pixel_shader.hlsl", "psmain");
 
-	mat4_translate(&world_cam, (vec3) {0, 0, -50});
+	// mat4_translate(&world_cam, (vec3) {0, 0, -50});
 	
 	constant_buffer cb = graphics_create_constant_buffer(sizeof(constant));
+
+	float delta_rot_y = 0.0f;
 
 	while(motor_running()) {
 		frame_begin();
@@ -53,9 +55,30 @@ int main() {
         {
             constant cc = { 0 };
         	cc.world = mat4_id();
+        	// mat4_scale(&cc.world, (vec3){0.5f, 0.5f, 0.5f});
+
+
+        	// mat4 temp = mat4_id();
+        	// mat4_rotate_z(&temp, delta_rot_y);
+        	// cc.world = mat4_mul(temp, cc.world);
+
+        	// mat4 temp = mat4_id();
+        	// mat4_rotate_y(&temp, delta_rot_y);
+        	// cc.world = mat4_mul(temp, cc.world);
+
+        	// mat4 temp = mat4_id();
+        	// mat4_translate(&temp, (vec3) { 10 * sin(2 * delta_rot_y), 0.0f, 10* cos(2*delta_rot_y) });
+        	// cc.world = mat4_mul(temp, cc.world);
+
+        	// temp = mat4_id();
+        	// mat4_rotate_x(&temp, delta_rot_y);
+        	// cc.world = mat4_mul(temp, cc.world);
+
+
         	cc.view = mat4_id();
         	cc.proj = mat4_id();
-        	mat4_ortho_lh(&cc.proj, (float)w / 100.f, (float)h / 100.0f, -4.0f, 4.0f);
+        	// mat4_perspective_fov_lh(&cc.proj, 1.25f, (float)w / (float)h, 0.1f, 100.0f);
+        	mat4_ortho_lh(&cc.proj, (float)w / 100.f, (float)h / 100.0f, -10.0f, 10.0f);
 
     		graphics_update_constant_buffer(&cb, &cc);
     	}
@@ -76,6 +99,8 @@ int main() {
         motor_process_events();
 
         frame_end();
+
+        delta_rot_y += frame_dt() / 0.55f;
 	}
 
 	// unload assets

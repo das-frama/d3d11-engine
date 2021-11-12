@@ -42,6 +42,7 @@ typedef struct {
 /* Engine core. */
 void frame_begin(void);
 void frame_end(void);
+float frame_dt(void);
 
 /* Helpers. */
 fpath fpath_new(const char* path);
