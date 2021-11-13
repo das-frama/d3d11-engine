@@ -3,16 +3,18 @@
 
 #include "engine.h"
 
-#include <windows.h>
+void win32_init(void);
+void win32_close();
 
-bool win32_init(void);
-void win32_close(HWND hwnd);
+void win32_create(int w, int h);
+void win32_show(bool show);
+HWND win32_window();
+void win32_size(int *w, int *h);
+void win32_resize(int w, int h);
+void win32_set_title(const char* title);
 
-HWND win32_create_window(int w, int h);
-void win32_show_window(HWND hwnd, bool show);
-void win32_resize_window(HWND hwnd, int w, int h);
-void win32_get_window_size(HWND hwnd, int *w, int *h);
-
-void win32_broadcast(void);
+bool win32_has_messages(void);
+void win32_process_messages(void);
+void win32_sleep(uint ms);
 
 #endif // MOTOR_WIN32_PLATFORM

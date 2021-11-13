@@ -2,10 +2,12 @@
 #define MOTOR_ENGINE_H
 
 /* Standard includes. */
-#include <stdio.h> // printf, sprint, snprintf
-#include <stdlib.h> // malloc, free, realpath
-#include <string.h> // strcpy, strcat
-#include <assert.h> // assert
+#include <stdio.h>   // printf, sprint, snprintf
+#include <stdlib.h>  // malloc, free, realpath
+#include <string.h>  // strcpy, strcat
+#include <assert.h>  // assert
+#include <stdbool.h> // bool
+#include <math.h> // cos, sin, pow
 
 /* Windows includes. */
 #define WIN32_LEAN_AND_MEAN
@@ -17,14 +19,6 @@
 #include <d3d11_1.h>
 #include <dxgi1_6.h>
 
-/* Utils. */
-#include "utils/utils.h"
-#include "utils/log.h"
-
-/* Math. */
-#include "math/vec.h"
-#include "math/mat.h"
-
 /* Defines. */
 #define PATH_MAX 512
 
@@ -34,17 +28,29 @@
 #define SEPARATOR "/"
 #endif
 
-/* Common structs. */
-typedef struct {
-    char str[PATH_MAX];
-} fpath;
+/* Utils include. */
+#include "utils/log.h"
+#include "math/vec.h"
+#include "math/mat.h"
+
+/* Typedefs. */
+// typedef short int     sint;
+typedef unsigned int  uint;
+typedef unsigned char uchar;
 
 /* Engine core. */
 void frame_begin(void);
 void frame_end(void);
 float frame_dt(void);
 
-/* Helpers. */
-fpath fpath_new(const char* path);
+/* File Helpers. */
+const char* file_ext(const char* filename);
+bool file_ext_eq(const char* filename, const char* ext2);
+const char* file_abs(const char* path);
+void* file_load_win32(const char* filename, size_t* len);
+
+/* String Helpers. */
+const wchar_t* to_wch(const char *c);
+
 
 #endif // MOTOR_ENGINE_H

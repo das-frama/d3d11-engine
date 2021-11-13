@@ -8,7 +8,7 @@ del *.ilk
 
 set sources=..\src\*.c ..\src\utils\*.c ..\src\platform\*.c ..\src\renderer\*.c ..\src\math\*.c ..\src\assets\*.c
 set warnings_to_ignore=-wd4201 -wd4116 -wd4101 -wd4103 -wd4081 -wd4204 -wd4255 -wd4668 -wd4820 -wd4100 -wd4189 -wd4711 -wd4710 -wd4101 -wd4296 -wd4311 -wd4115 -wd4702 -wd4456 -wd4555
-set flags=-nologo -Zi -FC -W0 %warnings_to_ignore%
+set flags=-nologo -Zi -FC -W1 %warnings_to_ignore%
 set libs=user32.lib dxgi.lib d3d11.lib D3DCompiler.lib dxguid.lib
 
 REM Compile shaders.
@@ -26,6 +26,6 @@ REM create symlink to assets.
 rem mklink /D assets ..\app\assets
 
 del lock.tmp
-del *.obj
+rem del *.obj
 
 popd

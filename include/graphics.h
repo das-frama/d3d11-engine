@@ -4,24 +4,23 @@
 #include "engine.h"
 
 #include "assets/mesh.h"
-#include "assets/shader.h"
+#include "assets/material.h"
 
-#include "renderer/d3d11_renderer.h"
-
-void graphics_init(int w, int h);
+void graphics_init(void);
 void graphics_close(void);
 
-HWND graphics_get_window(void);
-void graphics_get_window_size(int* w, int* h);
+void graphics_window_size(int* w, int* h);
+void graphics_window_resize(int w, int h);
+void graphics_window_set_title(const char* title);
 
-void graphics_clear_screen(float r, float g, float b, float a);
-void graphics_draw_mesh(mesh* m, shader* s, constant_buffer* cb);
+void graphics_do_one_frame(void);
+
+void graphics_clear(float r, float g, float b, float a);
+void graphics_draw(const mesh* m, const material* mat);
 void graphics_present(void);
 
-void graphics_window_update(void);
-
-constant_buffer graphics_create_constant_buffer(size_t buffer_size);
-void graphics_update_constant_buffer(constant_buffer* cb, void* buffer);
+// const_buffer* graphics_create_const_buffer(size_t buffer_size);
+// void graphics_update_const_buffer(const const_buffer* cb, void* buffer);
 
 // void graphics_create_shaders(void);
 

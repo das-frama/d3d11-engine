@@ -1,23 +1,19 @@
-#ifndef MOTOR_ASSET_H
-#define MOTOR_ASSET_H
+#ifndef MOTOR_assets_H
+#define MOTOR_assets_H
 
 #include "engine.h"
 
 typedef struct {
-	fpath path;
+	const char* path;
 	void* ptr;
 	bool loaded;
 } asset;
 
 /* Asset API. */
-void asset_init(const char* core_asset_path);
-void asset_close(void);
+void assets_init(const char* core_assets_path);
+void assets_close(void);
 
-asset* asset_load(const char* asset_path);
-void asset_unload(asset* a);
+asset* assets_load(const char* filename);
+void assets_unload(asset* a);
 
-/* Helpers. */
-const char* file_extension(const char* file_name);
-fpath abs_path(fpath path);
-
-#endif // MOTOR_ASSET_H
+#endif // MOTOR_assets_H

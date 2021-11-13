@@ -1,46 +1,42 @@
 #include "assets/shader.h"
 
-extern renderer* rnd;
+#include "renderer/d3d11_renderer.h"
 
-shader* shader_new() {
+// extern renderer* rnd;
+
+shader* shader_load(const char* filename, const char* entry_point, shader_type type) {
+	// if provided file doesn't have .hlsl extension...
+	if (!file_ext_eq(filename, "hlsl") && !file_ext_eq(filename, "fx")) {
+		error("shaders allows load either .hlsl or .fx files");
+	}
+
+	// allocate new shader.
 	shader* s = malloc(sizeof(shader));
 	memset(s, 0, sizeof(shader));
+
+	s->type = type;
+
+	// get full path to the file.
+	void* byte_code = NULL;
+	size_t byte_code_size = 0;
+	if (s->type == SHADER_TYPE_PS) {
+		d3d11_compile_pixel_shader(file_abs(filename), entry_point, &byte_code, &byte_code_size);
+		s->ptr = d3d11_create_pixel_shader(byte_code, byte_code_size);
+	} else if (s->type == SHADER_TYPE_VS) {
+		d3d11_compile_vertex_shader(file_abs(filename), entry_point, &byte_code, &byte_code_size);
+		s->ptr = d3d11_create_vertex_shader(byte_code, byte_code_size);
+	}
+	d3d11_release_compiled_shaders();
+
 	return s;
 }
 
-void shader_delete(shader* s) {
-	d3d11_release_vertex_shader(&s->vs);
-	d3d11_release_pixel_shader(&s->ps);
-	free(s);
-}
-
-void shader_load_fx(shader* s, const char* fx_path) {
-	void* shader_byte_code = NULL;
-	size_t byte_code_size = 0;
-
-
-	d3d11_compile_vertex_shader(fx_path, "vsmain", &shader_byte_code, &byte_code_size);
-	s->vs = d3d11_create_vertex_shader(rnd, shader_byte_code, byte_code_size);
-	d3d11_release_compiled_shaders();
-
-	d3d11_compile_pixel_shader(fx_path, "psmain", &shader_byte_code, &byte_code_size);
-	s->ps = d3d11_create_pixel_shader(rnd, shader_byte_code, byte_code_size);
-	d3d11_release_compiled_shaders();
-}
-
-void shader_load_hlsl(shader* s, const char* hlsl_path, const char* entry_point) {
-	void* shader_byte_code = NULL;
-	size_t byte_code_size = 0;
-
-	// fpath path = abs_path(fpath_new(hlsl_path));
-
-	if (strcmp(entry_point, "psmain") == 0) {
-		d3d11_compile_pixel_shader(hlsl_path, entry_point, &shader_byte_code, &byte_code_size);
-		s->ps = d3d11_create_pixel_shader(rnd, shader_byte_code, byte_code_size);
-	} else if (strcmp(entry_point, "vsmain") == 0) {
-		d3d11_compile_vertex_shader(hlsl_path, entry_point, &shader_byte_code, &byte_code_size);
-		s->vs = d3d11_create_vertex_shader(rnd, shader_byte_code, byte_code_size);
+void shader_unload(shader* s) {
+	if (s->type == SHADER_TYPE_VS) {
+		d3d11_release_vertex_shader(s);
+	} else if (s->type == SHADER_TYPE_PS) {
+		d3d11_release_pixel_shader(s);
 	}
 
-	d3d11_release_compiled_shaders();
+	free(s);
 }

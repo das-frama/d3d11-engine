@@ -46,8 +46,8 @@ vec3 vec3_add(int n, ...) {
 	va_list args;
 	va_start(args, n);
 
-	vec3 v;
-	vec3 vv;
+	vec3 v = vec3_zero();
+	vec3 vv = vec3_zero();
 	for (int i = 0; i < n; i++) {
 		vv = va_arg(args, vec3);
 		v.x += vv.x;

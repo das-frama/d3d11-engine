@@ -1,12 +1,15 @@
 #include "platform/win32_platform.h"
 
-extern bool running;
+bool win32_should_quit = false;
 
-LRESULT CALLBACK wnd_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+static MSG g_msg;
+static HWND g_window = {0};
+
+static LRESULT CALLBACK wnd_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
     switch (msg) {
         case WM_CLOSE:
         case WM_DESTROY:
-            running = false;
+            win32_should_quit = true;
             PostQuitMessage(0);
             break;
 
@@ -17,63 +20,72 @@ LRESULT CALLBACK wnd_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
     return 0;
 }
 
-bool win32_init() {
+void win32_init() {
     WNDCLASSEX wc;
-    wc.cbClsExtra = NULL;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
     wc.cbSize = sizeof(WNDCLASSEX);
-    wc.cbWndExtra = NULL;
     wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
     wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
     wc.hInstance = NULL;
-    wc.lpszClassName = L"MyWindowClass";
-    wc.lpszMenuName = L"";
-    wc.style = NULL;
+    wc.lpszClassName = "MyWindowClass";
+    wc.lpszMenuName = "";
+    wc.style = 0;
     wc.lpfnWndProc = &wnd_proc;
 
     if (!RegisterClassEx(&wc)) {
-        return false;
+        error("RegisterClassEx error");
     }
-
-    return true;
 }
 
-void win32_close(HWND hwnd) {
-    DestroyWindow(hwnd);
+void win32_close() {
+    DestroyWindow(g_window);
+    UnregisterClass("MyWindowClass", NULL);
 }
 
-HWND win32_create_window(int w, int h) {
-    return CreateWindowEx(
-            WS_EX_OVERLAPPEDWINDOW, L"MyWindowClass", L"My Game",
+void win32_create(int w, int h) {
+    g_window = CreateWindowEx(
+            WS_EX_OVERLAPPEDWINDOW, "MyWindowClass", "My Game",
             WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, w, h,
-            0, 0, 0, 0
-    );
+            0, 0, 0, 0);
 }
 
-void win32_show_window(HWND hwnd, bool show) {
-    ShowWindow(hwnd, show ? SW_SHOW : SW_HIDE);
-    UpdateWindow(hwnd);
+void win32_show(bool show) {
+    ShowWindow(g_window, show ? SW_SHOW : SW_HIDE);
+    UpdateWindow(g_window);
 }
 
-void win32_broadcast() {
-    MSG msg;
-    while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) > 0) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
-
-    Sleep(1);
+HWND win32_window() {
+    return g_window;
 }
 
-void win32_resize_window(HWND hwnd, int w, int h) {
-    SetWindowPos(hwnd, NULL, CW_USEDEFAULT, CW_USEDEFAULT, w, h, SWP_SHOWWINDOW);
+void win32_set_title(const char* title) {
+    SetWindowTextA(g_window, title);
 }
 
-void win32_get_window_size(HWND hwnd, int *w, int *h) {
+void win32_resize(int w, int h) {
+    SetWindowPos(g_window, 0, CW_USEDEFAULT, CW_USEDEFAULT, w, h, SWP_NOZORDER|SWP_NOMOVE);
+}
+
+void win32_size(int *w, int *h) {
     RECT rc;
-    GetClientRect(hwnd, &rc);
+    GetClientRect(g_window, &rc);
 
     *w = (int) rc.right - (int) rc.left;
     *h = (int) rc.bottom - (int) rc.top;
+}
+
+bool win32_has_messages() {
+    return PeekMessage(&g_msg, NULL, 0, 0, PM_REMOVE) != 0;   
+}
+
+void win32_process_messages() {
+    TranslateMessage(&g_msg);
+    DispatchMessage(&g_msg);
+}
+
+void win32_sleep(uint ms) {
+    Sleep(ms);     
 }

@@ -1,31 +1,29 @@
 #include "motor.h"
 
-bool running = false;
+extern bool win32_should_quit;
 
-void motor_init(const char* core_asset_path, int w, int h) {
+void motor_init(const char* core_assets_path, const char* name, int w, int h) {
 	log("Starting motor...");
 
 	log("Init graphics...");
-	graphics_init(w, h);
+	graphics_init();
+    graphics_window_set_title(name);
+    graphics_window_resize(w, h);
 
     log("Init assets...");
-    asset_init(core_asset_path);
-
-	running = true;
+    assets_init(core_assets_path);
 }
 
 void motor_close() {
-    running = false;
-    log("Closing engine...\n");
+    log("Closing motor...");
 
-    log("Closing graphics manager...\n");
+    log("Closing graphics...");
     graphics_close();
+
+    log("Closing assets...");
+    assets_close();
 }
 
 bool motor_running() {
-    return running;
-}
-
-void motor_process_events() {
-    graphics_window_update();
+    return !win32_should_quit;
 }

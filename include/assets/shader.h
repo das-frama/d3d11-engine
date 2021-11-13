@@ -1,15 +1,19 @@
 #ifndef MOTOR_SHADER_H
 #define MOTOR_SHADER_H
 
-#include "renderer/d3d11_renderer.h"
+#include "engine.h"
 
-typedef struct {
-	vertex_shader vs;
-	pixel_shader  ps;
+typedef enum {
+	SHADER_TYPE_VS,
+	SHADER_TYPE_PS,
+} shader_type;
+
+typedef struct { 
+	void* ptr;
+	shader_type type;
 } shader;
 
-shader* shader_new(void);
-void shader_delete(shader* s);
-void shader_load_fx(shader* s, const char* fx_path);
+shader* shader_load(const char* filename, const char* entry_point, shader_type type);
+void shader_unload(shader* s);
 
 #endif // MOTOR_SHADER_H

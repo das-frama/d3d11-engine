@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <time.h> 
+#include <time.h>
 
 /* Defines. */
 #define ERROR_BUFFER_SIZE   2048*4

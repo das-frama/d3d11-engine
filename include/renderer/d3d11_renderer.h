@@ -3,26 +3,8 @@
 
 #include "engine.h"
 
-#include <windows.h>
-#include <d3d11_1.h>
-#include <dxgi1_6.h>
-
-typedef struct {
-	ID3D11Device* d3d_device;
-	ID3D11DeviceContext* imm_context;
-	ID3D11DeviceContext1* imm_context1;
-
-	ID3D11RasterizerState* cull_front_face;
-	ID3D11RasterizerState* cull_back_face;
-
-	IDXGISwapChain* swap_chain;
-	ID3D11RenderTargetView* rtv;
-	ID3D11DepthStencilView* dsv;
-} renderer;
-
-typedef struct {
-	ID3D11Buffer* buffer;
-} constant_buffer;
+#include "assets/shader.h"
+#include "assets/texture.h"
 
 typedef struct {
 	size_t size_vertex;
@@ -37,48 +19,56 @@ typedef struct {
 } index_buffer;
 
 typedef struct {
-	ID3D11VertexShader* ptr;
-} vertex_shader;
+	ID3D11Buffer* buffer;
+} const_buffer;
 
-typedef struct {
-	ID3D11PixelShader* ptr;
-} pixel_shader;
+void d3d11_init(int w, int h);
+void d3d11_close();
 
-renderer* d3d11_init(int w, int h);
-void d3d11_close(renderer*);
+void d3d11_create_device();
+void d3d11_create_rasterizer_state();
+void d3d11_create_swap_chain(int w, int h);
 
-void d3d11_create_device(renderer* r);
-void d3d11_create_rasterizer_state(renderer*);
-void d3d11_create_swap_chain(renderer*, int w, int h);
+// Buffers.
+void d3d11_reload_buffers(int w, int h);
+void d3d11_set_rasterizer_state(bool cull_front);
+void d3d11_clear_render_target_color(float r, float g, float b, float a);
+void d3d11_set_viewport_size(int w, int h);\
+void d3d11_present(bool vsync);
 
-void d3d11_reload_buffers(renderer*, int w, int h);
-void d3d11_set_rasterizer_state(renderer*, bool cull_front);
-void d3d11_clear_render_target_color(renderer*, float r, float g, float b, float a);
-void d3d11_set_viewport_size(renderer*, int w, int h);
-
-vertex_shader d3d11_create_vertex_shader(renderer* r, const void* shader_byte_code, size_t byte_code_size);
-pixel_shader d3d11_create_pixel_shader(renderer* r, const void* shader_byte_code, size_t byte_code_size);
-void d3d11_release_vertex_shader(vertex_shader* vs);
-void d3d11_release_pixel_shader(pixel_shader* ps);
+// Vertex and Pixel shader.
+shader* d3d11_create_vertex_shader(const void* byte_code, size_t byte_code_size);
+shader* d3d11_create_pixel_shader(const void* byte_code, size_t byte_code_size);
+void d3d11_release_vertex_shader(shader* s);
+void d3d11_release_pixel_shader(shader* s);
+void d3d11_compile_vertex_shader(const char* filename, const char* entry_point, void** byte_code, size_t* byte_code_size);
+void d3d11_compile_pixel_shader(const char* filename, const char* entry_point, void** byte_code, size_t* byte_code_size);
 void d3d11_release_compiled_shaders(void);
-void d3d11_compile_vertex_shader(const char* filename, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size);
-void d3d11_compile_pixel_shader(const char* filename, const char* entry_point_name, void** shader_byte_code, size_t* byte_code_size);
-void d3d11_set_vertex_shader(renderer* r, vertex_shader* vs);
-void d3d11_set_pixel_shader(renderer* r, pixel_shader* ps);
+void d3d11_set_vertex_shader(const shader* s);
+void d3d11_set_pixel_shader(const shader* s);
 
-constant_buffer d3d11_create_constant_buffer(renderer* r, size_t size_buffer);
-void d3d11_update_constant_buffer(renderer* r, constant_buffer* cb, void* buffer);
-void d3d11_vs_set_constant_buffer(renderer* r, constant_buffer* cb);
-void d3d11_ps_set_constant_buffer(renderer* r, constant_buffer* cb);
+// Const buffer.
+const_buffer* d3d11_create_const_buffer(void* data, size_t size);
+void d3d11_update_const_buffer(const_buffer* cb, void* buffer);
+void d3d11_release_const_buffer(const_buffer* cb);
+void d3d11_vs_set_const_buffer(const_buffer* cb);
+void d3d11_ps_set_const_buffer(const_buffer* cb);
 
-vertex_buffer d3d11_create_vertex_buffer(renderer* r, void* vertices, size_t size_vertex, size_t size_list, void* shader_byte_code, size_t size_byte_shader);
-index_buffer d3d11_create_index_buffer(renderer* r, void* indices, size_t size_list);
-void d3d11_set_vertex_buffer(renderer* r, vertex_buffer* vb);
-void d3d11_set_index_buffer(renderer* r, index_buffer* ib);
+// Vertex and index buffer.
+vertex_buffer* d3d11_create_vertex_buffer(void* vertices, size_t size_vertex, size_t size_list, void* byte_code, size_t size_byte_shader);
+index_buffer* d3d11_create_index_buffer(void* indices, size_t size_list);
+void d3d11_release_vertex_buffer(vertex_buffer* vb);
+void d3d11_release_index_buffer(index_buffer* ib);
+void d3d11_set_vertex_buffer(vertex_buffer* vb);
+void d3d11_set_index_buffer(index_buffer* ib);
 
-void d3d11_draw_indexed_triangle_list(renderer* r, size_t index_count, size_t start_index_location, size_t start_vertex_index);
-void d3d11_draw_triangle_strip(renderer* r, size_t vertex_count, size_t start_vertex_index);
+// Texture.
+texture* d3d11_create_texture(void* data, int w, int h, int n);
+void d3d11_release_texture(texture* t);
+void d3d11_set_ps_texture(const texture** t, size_t size);
 
-void d3d11_present(renderer*, bool vsync);
+// Draw
+void d3d11_draw_indexed_triangle_list(size_t index_count, size_t start_index_location, size_t start_vertex_index);
+void d3d11_draw_triangle_strip(size_t vertex_count, size_t start_vertex_index);
 
 #endif // MOTOR_D3D11_RENDERER

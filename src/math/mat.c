@@ -74,12 +74,11 @@ void mat4_perspective_fov_lh(mat4* m, float fov, float aspect, float znear, floa
 }
 
 void mat4_inverse(mat4* m) {
-    vec4 v, vec[3];
+    vec4 v = vec4_zero();
+    vec4 vec[3] = {0};
     int a, i, j;
-    float det = 0.0f;
-
-    det = mat4_det(*m);
-    if (det == 0.0f) return m;
+    float det = mat4_det(*m);
+    if (det == 0.0f) return;
 
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) {

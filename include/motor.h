@@ -6,13 +6,19 @@
 #include "asset.h"
 #include "graphics.h"
 
-#include "renderer/d3d11_renderer.h"
-#include "platform/win32_platform.h"
+#include "assets/mesh.h"
+#include "assets/texture.h"
+#include "assets/material.h"
+#include "assets/shader.h"
+
+/* Macros. */
+#define process_events() { \
+	if (win32_has_messages()) { win32_process_messages(); continue; } \
+}
 
 /* Engine API. */
-void motor_init(const char* core_asset_path, int w, int h);
+void motor_init(const char* core_assets_path, const char* name, int w, int h);
 void motor_close(void);
-bool motor_running(void);
-void motor_process_events();
+bool motor_running();
 
 #endif // MOTOR_H
