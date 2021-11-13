@@ -2,7 +2,7 @@
 
 bool win32_should_quit = false;
 
-static MSG g_msg;
+//static MSG g_msg;
 static HWND g_window = {0};
 
 static LRESULT CALLBACK wnd_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
@@ -77,14 +77,12 @@ void win32_size(int *w, int *h) {
     *h = (int) rc.bottom - (int) rc.top;
 }
 
-bool win32_has_messages() {
-    return PeekMessage(&g_msg, NULL, 0, 0, PM_REMOVE) != 0;   
-}
-
 void win32_process_messages() {
-    TranslateMessage(&g_msg);
-    DispatchMessage(&g_msg);
-
+    MSG msg;
+    while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) > 0) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
     Sleep(1);
 }
 

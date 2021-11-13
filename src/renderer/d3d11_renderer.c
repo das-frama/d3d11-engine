@@ -417,63 +417,66 @@ void d3d11_set_index_buffer(index_buffer* ib) {
     ID3D11DeviceContext_IASetIndexBuffer(g_imm_context, ib->buffer, DXGI_FORMAT_R32_UINT, 0);
 }
 
-texture* d3d11_create_texture(void* data, int w, int h, int n) {
+texture* d3d11_create_texture(uchar* data, int w, int h, int n) {
     texture* t = malloc(sizeof(texture));
     memset(t, 0, sizeof(texture));
 
-    size_t row_pitch = (w * n + 7) / 8;
-    // size_t row_pitch = w * n;
+    // size_t row_pitch = (w * n + 7) / 8;
+    size_t row_pitch = 4 * w * sizeof(uchar);  
     size_t image_size = row_pitch * h;
 
-      // Create texture
-    D3D11_TEXTURE2D_DESC desc;
-    desc.Width = w;
-    desc.Height = h;
-    desc.MipLevels = 1;
-    desc.ArraySize = 1;
-    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    desc.SampleDesc.Count = 1;
-    desc.SampleDesc.Quality = 0;
-    desc.Usage = D3D11_USAGE_DEFAULT;
-    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-    desc.CPUAccessFlags = 0;
-    desc.MiscFlags = 0;
+    // Create texture
+    D3D11_TEXTURE2D_DESC tex_desc;
+    ZeroMemory(&tex_desc, sizeof(D3D11_TEXTURE2D_DESC));
+    tex_desc.Width = w;
+    tex_desc.Height = h;
+    tex_desc.MipLevels = 1;
+    tex_desc.ArraySize = 1;
+    tex_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    tex_desc.SampleDesc.Count = 1;
+    tex_desc.SampleDesc.Quality = 0;
+    tex_desc.Usage = D3D11_USAGE_DEFAULT;
+    tex_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    tex_desc.CPUAccessFlags = 0;
+    tex_desc.MiscFlags = 0;
 
     D3D11_SUBRESOURCE_DATA init_data;
     init_data.pSysMem = data;
     init_data.SysMemPitch = row_pitch;
     init_data.SysMemSlicePitch = image_size;
 
-    HRESULT hr = ID3D11Device_CreateTexture2D(g_d3d_device, &desc, &init_data, (ID3D11Texture2D**)&t->ptr);
+    HRESULT hr = ID3D11Device_CreateTexture2D(g_d3d_device, &tex_desc, &init_data, &t->ptr);
     if (FAILED(hr)) {
         error("CreateTexture2D error");
     }
 
-    D3D11_SAMPLER_DESC sampler_desc;
+    D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc;
+    srv_desc.Format = tex_desc.Format;
+    srv_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srv_desc.Texture2D.MipLevels = 1;
+    srv_desc.Texture2D.MostDetailedMip = 0;
+
+    hr = ID3D11Device_CreateShaderResourceView(g_d3d_device, (ID3D11Resource*)t->ptr, &srv_desc, &t->srv);
+    if (FAILED(hr)) {
+       error("CreateShaderResourceView error");
+    }
+
+    D3D11_SAMPLER_DESC sampler_desc = { 0 };
     sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
     sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
     sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
     sampler_desc.Filter = D3D11_FILTER_ANISOTROPIC;
     sampler_desc.MinLOD = 0;
-    sampler_desc.MaxLOD = 2;
+    sampler_desc.MaxLOD = 1;
 
-    hr = ID3D11Device_CreateSamplerState(g_d3d_device, &sampler_desc, (ID3D11SamplerState**)&t->smp);
+    hr = ID3D11Device_CreateSamplerState(g_d3d_device, &sampler_desc, &t->smp);
     if (FAILED(hr)) {
-        error("CreateSamplerState error");
-    }
-
-    D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc;
-    srv_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    srv_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-    srv_desc.Texture2D.MipLevels = 2;
-    srv_desc.Texture2D.MostDetailedMip = 1;
-
-    hr = ID3D11Device_CreateShaderResourceView(g_d3d_device, t->ptr, &srv_desc, (ID3D11ShaderResourceView**)&t->srv);
-    if (FAILED(hr)) {
-        error("CreateShaderResourceView error");
+       error("CreateSamplerState error");
     }
 
     ID3D11DeviceContext_GenerateMips(g_imm_context, t->srv);
+    
+    free(data);
 
     return t;
 }
@@ -491,8 +494,8 @@ void d3d11_set_ps_texture(const texture** t, size_t size) {
     ID3D11SamplerState* list_sampler[32];
 
     for (size_t i = 0; i < size; i++) {
-        list_res[i] = (ID3D11ShaderResourceView*)t[i]->srv;
-        list_sampler[i] = (ID3D11SamplerState*)t[i]->smp;
+        list_res[i] = t[i]->srv;
+        list_sampler[i] = t[i]->smp;
     }
 
     ID3D11DeviceContext_PSSetShaderResources(g_imm_context, 0, size, list_res);

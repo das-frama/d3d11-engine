@@ -1,4 +1,4 @@
-Texture2D Texture: register(t0);
+Texture2D TextureColor: register(t0);
 sampler TextureSampler: register(s0);
 
 struct PS_INPUT
@@ -17,33 +17,35 @@ cbuffer constant : register(b0)
 
 float4 psmain(PS_INPUT input) : SV_TARGET
 {
-    float light_direction = float3(0.5, 0.5, 0.5);
-    float direction_to_camera = float3(1, 0, 1);
+    // float4 tex_color = TextureColor.Sample(TextureSampler, 1.0 - input.texcoord);
 
-    //AMBIENT LIGHT
-    float ka = 0.1;
-    float3 ia = float3(1.0, 1.0, 1.0);
+    // float light_direction = float3(0.5, 0.5, 0.5);
+    // float direction_to_camera = float3(1, 0, 1);
 
-    float3 ambient_light = ka * ia;
+    // //AMBIENT LIGHT
+    // float ka = 0.1;
+    // float3 ia = tex_color.rgb;// float3(1.0, 1.0, 1.0);
 
-    //DIFFUSE LIGHT
-    float kd = 0.7;
-    float3 id = float3(1.0, 1.0, 1.0);
-    float amount_diffuse_light = max(0.0, dot(light_direction, input.normal));
+    // float3 ambient_light = ka * ia;
 
-    float3 diffuse_light = kd * amount_diffuse_light * id;
+    // //DIFFUSE LIGHT
+    // float kd = 0.7;
+    // float3 id = float3(1.0, 1.0, 1.0);
+    // float amount_diffuse_light = max(0.0, dot(light_direction, input.normal));
 
-    //SPECULAR LIGHT
-    float ks = 1.0;
-    float3 is = float3(1.0, 1.0, 1.0);
-    float3 reflected_light = reflect(light_direction, input.normal);
-    float shininess = 30.0;
-    float amount_specular_light = pow(max(0.0, dot(reflected_light, direction_to_camera)), shininess);
+    // float3 diffuse_light = kd * amount_diffuse_light * id;
 
-    float3 specular_light = ks * amount_specular_light * is;
+    // //SPECULAR LIGHT
+    // float ks = 1.0;
+    // float3 is = float3(1.0, 1.0, 1.0);
+    // float3 reflected_light = reflect(light_direction, input.normal);
+    // float shininess = 30.0;
+    // float amount_specular_light = pow(max(0.0, dot(reflected_light, direction_to_camera)), shininess);
 
-    float3 final_light = ambient_light + diffuse_light + specular_light;
+    // float3 specular_light = ks * amount_specular_light * is;
 
-    return float4(final_light, 1.0);
-    // return float4(0, 1, 1, 1);
+    // float3 final_light = ambient_light + diffuse_light + specular_light;
+
+    // return float4(final_light, 1.0);
+    return TextureColor.Sample(TextureSampler, input.texcoord);
 }

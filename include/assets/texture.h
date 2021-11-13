@@ -4,9 +4,9 @@
 #include "engine.h"
 
 typedef struct {
-	void* ptr;
+	ID3D11Texture2D* ptr;
 	ID3D11ShaderResourceView* srv;
-	void* smp;
+	ID3D11SamplerState* smp;
 } texture;
 
 texture* texture_load(const char* filename);

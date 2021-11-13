@@ -13,7 +13,6 @@ void win32_size(int *w, int *h);
 void win32_resize(int w, int h);
 void win32_set_title(const char* title);
 
-bool win32_has_messages(void);
 void win32_process_messages(void);
 void win32_sleep(uint ms);
 

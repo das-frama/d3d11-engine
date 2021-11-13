@@ -63,7 +63,7 @@ void d3d11_set_vertex_buffer(vertex_buffer* vb);
 void d3d11_set_index_buffer(index_buffer* ib);
 
 // Texture.
-texture* d3d11_create_texture(void* data, int w, int h, int n);
+texture* d3d11_create_texture(uchar* data, int w, int h, int n);
 void d3d11_release_texture(texture* t);
 void d3d11_set_ps_texture(const texture** t, size_t size);
 

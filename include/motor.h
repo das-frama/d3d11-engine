@@ -13,7 +13,7 @@
 
 /* Macros. */
 #define process_events() { \
-	while (win32_has_messages()) win32_process_messages(); \
+	while (win32_has_messages()) { win32_process_messages(); } \
 }
 
 /* Engine API. */

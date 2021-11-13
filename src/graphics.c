@@ -60,7 +60,7 @@ void graphics_draw(mesh* m, material* mat) {
     d3d11_set_pixel_shader(mat->ps);
 
     // Set texture.
-    // d3d11_set_ps_texture(mat->texs, mat->texs_size);
+    d3d11_set_ps_texture(mat->texs, mat->texs_size);
 
     // Set vertex and index buffers.
     d3d11_set_vertex_buffer(m->vb);
