@@ -26,6 +26,6 @@ REM create symlink to assets.
 rem mklink /D assets ..\app\assets
 
 del lock.tmp
-rem del *.obj
+del *.obj
 
 popd

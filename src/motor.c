@@ -6,12 +6,11 @@ void motor_init(const char* core_assets_path, const char* name, int w, int h) {
 	log("Starting motor...");
 
 	log("Init graphics...");
-	graphics_init();
+	graphics_init(w, h);
     graphics_window_set_title(name);
-    graphics_window_resize(w, h);
 
-    log("Init assets...");
-    assets_init(core_assets_path);
+    //log("Init assets...");
+    //assets_init(core_assets_path);
 }
 
 void motor_close() {

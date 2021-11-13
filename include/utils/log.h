@@ -41,6 +41,7 @@ char* get_asctime(void);
 	snprintf(error_buf, ERROR_BUFFER_SIZE-1, MSG, ##__VA_ARGS__); \
 	strcat_s(error_str, ERROR_BUFFER_SIZE-1, error_buf); \
 	error_print(error_str); \
+	exit(EXIT_FAILURE); \
 }
 
 #define warning(MSG, ...) {\

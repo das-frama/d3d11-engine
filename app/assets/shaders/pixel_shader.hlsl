@@ -1,18 +1,18 @@
 Texture2D Texture: register(t0);
 sampler TextureSampler: register(s0);
 
+struct PS_INPUT
+{
+    float4 position: SV_POSITION;
+    float2 texcoord: TEXCOORD0;
+    float3 normal:   NORMAL0;
+};
+
 cbuffer constant : register(b0)
 {
     row_major float4x4 world;
     row_major float4x4 view;
     row_major float4x4 proj;
-};
-
-struct PS_INPUT
-{
-    float4 position: SV_POSITION;
-    float2 texcoord: TEXCOORD;
-    float3 normal:   NORMAL;
 };
 
 float4 psmain(PS_INPUT input) : SV_TARGET
@@ -44,5 +44,6 @@ float4 psmain(PS_INPUT input) : SV_TARGET
 
     float3 final_light = ambient_light + diffuse_light + specular_light;
 
-    return float4(final_light,1.0);
+    return float4(final_light, 1.0);
+    // return float4(0, 1, 1, 1);
 }

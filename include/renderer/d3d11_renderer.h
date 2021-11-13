@@ -37,15 +37,15 @@ void d3d11_set_viewport_size(int w, int h);\
 void d3d11_present(bool vsync);
 
 // Vertex and Pixel shader.
-shader* d3d11_create_vertex_shader(const void* byte_code, size_t byte_code_size);
-shader* d3d11_create_pixel_shader(const void* byte_code, size_t byte_code_size);
+void* d3d11_create_vertex_shader(const void* byte_code, size_t byte_code_size);
+void* d3d11_create_pixel_shader(const void* byte_code, size_t byte_code_size);
 void d3d11_release_vertex_shader(shader* s);
 void d3d11_release_pixel_shader(shader* s);
 void d3d11_compile_vertex_shader(const char* filename, const char* entry_point, void** byte_code, size_t* byte_code_size);
 void d3d11_compile_pixel_shader(const char* filename, const char* entry_point, void** byte_code, size_t* byte_code_size);
 void d3d11_release_compiled_shaders(void);
-void d3d11_set_vertex_shader(const shader* s);
-void d3d11_set_pixel_shader(const shader* s);
+void d3d11_set_vertex_shader(shader* s);
+void d3d11_set_pixel_shader(shader* s);
 
 // Const buffer.
 const_buffer* d3d11_create_const_buffer(void* data, size_t size);

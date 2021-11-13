@@ -3,12 +3,11 @@
 #include "platform/win32_platform.h"
 #include "renderer/d3d11_renderer.h"
 
-void graphics_init() {
+void graphics_init(int w, int h) {
 	// Init win32.
 	win32_init();
 
     // Default values.
-    int w = 800, h = 600;
 	win32_create(w, h);
     win32_show(true);
 
@@ -17,9 +16,6 @@ void graphics_init() {
 
     // Set vieport size.
     d3d11_set_viewport_size(w, h);
-
-    // Set default rasterizer state.
-    d3d11_set_rasterizer_state(false);
 }
 
 void graphics_close() {
@@ -33,6 +29,7 @@ void graphics_window_size(int *w, int *h) {
 
 void graphics_window_resize(int w, int h) {
     win32_resize(w, h);
+    d3d11_set_viewport_size(w, h);
 }
 
 void graphics_window_set_title(const char* title) {
@@ -51,7 +48,7 @@ void graphics_clear_screen(float r, float g, float b, float a) {
     d3d11_clear_render_target_color(r, g, b, a);
 }
 
-void graphics_draw(const mesh* m, const material* mat) {
+void graphics_draw(mesh* m, material* mat) {
     d3d11_set_rasterizer_state(mat->cull_mode == CULL_MODE_FRONT);
 
     // Set constant buffer.
@@ -62,12 +59,12 @@ void graphics_draw(const mesh* m, const material* mat) {
     d3d11_set_vertex_shader(mat->vs);
     d3d11_set_pixel_shader(mat->ps);
 
+    // Set texture.
+    // d3d11_set_ps_texture(mat->texs, mat->texs_size);
+
     // Set vertex and index buffers.
     d3d11_set_vertex_buffer(m->vb);
     d3d11_set_index_buffer(m->ib);
-
-    // Set texture.
-    d3d11_set_ps_texture(mat->texs, mat->texs_size);
 
     // Draw.
     d3d11_draw_indexed_triangle_list(m->ib->size_list, 0, 0);

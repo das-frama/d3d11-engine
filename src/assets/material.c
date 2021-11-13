@@ -10,19 +10,6 @@ material* material_load(const char* vspath, const char* pspath) {
 	mat->vs = shader_load(vspath, "vsmain", SHADER_TYPE_VS);
 	mat->ps = shader_load(pspath, "psmain", SHADER_TYPE_PS);
 
-	// // Load textures.
-	// for (int i < 0; i < ts_size; i++) {
-	// 	material_add_texture(mat, ts[i]);
-	// }
-
-	// // Set constant buffer data.
-	// if (data != NULL) {
-	// 	material_set_data(mat, data, data_size);
-	// }
-
-	// // Set cull mode.
-	// material_set_mode(mode);
-
 	return mat;
 }
 

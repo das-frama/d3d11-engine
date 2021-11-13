@@ -19,16 +19,19 @@ void update_cc() {
 
 int main() {
 	// init engine
-	motor_init("assets", "Solar system", 1440, 900);
+	motor_init("assets", "Solar system", w, h);
 
 	update_cc();
 
 	// load assets
-	// mesh* sphere_mesh = mesh_load("assets\\meshes\\sphere.obj");
-	// material* sphere_mat = material_load("assets\\shaders\\vertex_shader.hlsl", "assets\\shaders\\pixel_shader.hlsl");
+	mesh* sphere_mesh = mesh_load("assets\\meshes\\spaceship.obj");
+	material* sphere_mat = material_load(
+		"assets\\shaders\\vertex_shader.hlsl", "assets\\shaders\\pixel_shader.hlsl"
+	);
+	material_set_data(sphere_mat, &cc, sizeof(constant));
+	
 	// texture* sphere_tex = texture_load("assets\\textures\\brick.png");
 	// material_add_texture(sphere_mat, sphere_tex);
-	// material_set_data(sphere_mat, &cc, sizeof(cc));
 	// material_set_mode(sphere_mat, CULL_MODE_BACK);
 
 	while(motor_running()) {
@@ -43,6 +46,7 @@ int main() {
 
 		// Render.
         graphics_clear_screen(0.0f, 0.0f, 0.0f, 1.0f);
+        graphics_draw(sphere_mesh, sphere_mat);
         graphics_present();
 
 		frame_end();

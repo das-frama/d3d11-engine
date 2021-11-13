@@ -7,8 +7,8 @@
 #include <d3dcompiler.h>
 
 #define SAFE_RELEASE(release, obj) if (obj) release##_Release(obj)
+#define ID3DBlob_Release(b) if (b) b->lpVtbl->Release(b)
 #define ID3DBlob_GetBufferPointer(b) b->lpVtbl->GetBufferPointer(b)
-#define ID3DBlob_Release(b) b->lpVtbl->Release(b)
 #define ID3DBlob_GetBufferSize(b) b->lpVtbl->GetBufferSize(b)
 
 static ID3D11Device* g_d3d_device = NULL;
@@ -198,32 +198,34 @@ void d3d11_present(bool vsync) {
     IDXGISwapChain_Present(g_swap_chain, (UINT)vsync, 0);
 }
 
-shader* d3d11_create_vertex_shader(const void* byte_code, size_t byte_code_size) {
-    shader* s = malloc(sizeof(shader));
-    memset(s, 0, sizeof(shader));
+void* d3d11_create_vertex_shader(const void* byte_code, size_t byte_code_size) {
+    // shader* s = malloc(sizeof(shader));
+    // memset(s, 0, sizeof(shader));
+    ID3D11VertexShader* buffer = NULL;
 
-    HRESULT hr = ID3D11Device_CreateVertexShader(g_d3d_device, byte_code, byte_code_size, NULL, (void*)&s->ptr);
+    HRESULT hr = ID3D11Device_CreateVertexShader(g_d3d_device, byte_code, byte_code_size, NULL, &buffer);
     if (FAILED(hr)) {
         error("CreateVertexShader error");
     }
 
-    return s;
+    return (void*)buffer;
 }
 
-shader* d3d11_create_pixel_shader(const void* byte_code, size_t byte_code_size) {
-    shader* s = malloc(sizeof(shader));
-    memset(s, 0, sizeof(shader));
+void* d3d11_create_pixel_shader(const void* byte_code, size_t byte_code_size) {
+    // shader* s = malloc(sizeof(shader));
+    // memset(s, 0, sizeof(shader));
+    ID3D11PixelShader* buffer = NULL;
 
-    HRESULT hr = ID3D11Device_CreatePixelShader(g_d3d_device, byte_code, byte_code_size, NULL, (void*)&s->ptr);
+    HRESULT hr = ID3D11Device_CreatePixelShader(g_d3d_device, byte_code, byte_code_size, NULL, &buffer);
     if (FAILED(hr)) {
         error("CreatePixelShader error");
     }
 
-    return s;
+    return (void*)buffer;
 }
 
 void d3d11_release_vertex_shader(shader* s) {
-    SAFE_RELEASE(ID3D11VertexShader, (ID3D11VertexShader*)s->ptr);\
+    SAFE_RELEASE(ID3D11VertexShader, (ID3D11VertexShader*)s->ptr);
 
     free(s);
 }
@@ -243,13 +245,12 @@ void d3d11_compile_vertex_shader(
         to_wch(filename), NULL, NULL, entry_point, "vs_5_0", 0, 0, &g_blob, &error_blob
     );
     if (FAILED(hr)) {
+        ID3DBlob_Release(error_blob);   
         error("D3DCompileFromFile error");
     }
 
     *byte_code = ID3DBlob_GetBufferPointer(g_blob);
     *byte_code_size = ID3DBlob_GetBufferSize(g_blob);
-
-    SAFE_RELEASE(ID3DBlob, error_blob);   
 }
 
 void d3d11_compile_pixel_shader(
@@ -257,27 +258,27 @@ void d3d11_compile_pixel_shader(
 ) {
     ID3DBlob* error_blob = NULL;
 
-    HRESULT hr = D3DCompileFromFile(to_wch(filename), NULL, NULL, 
-        entry_point, "ps_5_0", 0, 0, &g_blob, &error_blob);
+    HRESULT hr = D3DCompileFromFile(
+        to_wch(filename), NULL, NULL, entry_point, "ps_5_0", 0, 0, &g_blob, &error_blob
+    );
     if (FAILED(hr)) {
+        ID3DBlob_Release(error_blob);
         error("D3DCompileFromFile error");
     }
 
     *byte_code = ID3DBlob_GetBufferPointer(g_blob);
     *byte_code_size = ID3DBlob_GetBufferSize(g_blob);
-
-    SAFE_RELEASE(ID3DBlob, error_blob);
 }
 
 void d3d11_release_compiled_shaders() {
-    SAFE_RELEASE(ID3DBlob, g_blob);
+    ID3DBlob_Release(g_blob);
 }
 
-void d3d11_set_vertex_shader(const shader* s) {
+void d3d11_set_vertex_shader(shader* s) {
     ID3D11DeviceContext_VSSetShader(g_imm_context, (ID3D11VertexShader*)s->ptr, NULL, 0);
 }
 
-void d3d11_set_pixel_shader(const shader* s) {
+void d3d11_set_pixel_shader(shader* s) {
     ID3D11DeviceContext_PSSetShader(g_imm_context, (ID3D11PixelShader*)s->ptr, NULL, 0);
 }
 
@@ -295,7 +296,7 @@ const_buffer* d3d11_create_const_buffer(void* data, size_t size) {
 
     HRESULT hr = 0;
     if (data != NULL) {
-        D3D11_SUBRESOURCE_DATA init_data = { 0 };
+        D3D11_SUBRESOURCE_DATA init_data;
         init_data.pSysMem = data;
         hr = ID3D11Device_CreateBuffer(g_d3d_device, &buff_desc, &init_data, &cb->buffer);
     } else {
@@ -335,7 +336,7 @@ vertex_buffer* d3d11_create_vertex_buffer(
     vb->size_list = size_list;
 
     D3D11_BUFFER_DESC buff_desc;
-    ZeroMemory(&buff_desc, sizeof(D3D11_BUFFER_DESC));
+    // ZeroMemory(&buff_desc, sizeof(D3D11_BUFFER_DESC));
     buff_desc.Usage = D3D11_USAGE_DEFAULT;
     buff_desc.ByteWidth = size_vertex * size_list;
     buff_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -343,7 +344,7 @@ vertex_buffer* d3d11_create_vertex_buffer(
     buff_desc.MiscFlags = 0;
 
     D3D11_SUBRESOURCE_DATA init_data;
-    ZeroMemory(&init_data, sizeof(D3D11_SUBRESOURCE_DATA));
+    // ZeroMemory(&init_data, sizeof(D3D11_SUBRESOURCE_DATA));
     init_data.pSysMem = vertices;
 
     HRESULT hr = ID3D11Device_CreateBuffer(g_d3d_device, &buff_desc, &init_data, &vb->buffer);
@@ -373,7 +374,7 @@ index_buffer* d3d11_create_index_buffer(void* indices, size_t size_list) {
     ib->size_list = size_list;
 
     D3D11_BUFFER_DESC buff_desc;
-    ZeroMemory(&buff_desc, sizeof(D3D11_BUFFER_DESC));
+    // ZeroMemory(&buff_desc, sizeof(D3D11_BUFFER_DESC));
     buff_desc.Usage = D3D11_USAGE_DEFAULT;
     buff_desc.ByteWidth = sizeof(uint) * size_list;
     buff_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
@@ -381,7 +382,7 @@ index_buffer* d3d11_create_index_buffer(void* indices, size_t size_list) {
     buff_desc.MiscFlags = 0;
 
     D3D11_SUBRESOURCE_DATA init_data;
-    ZeroMemory(&init_data, sizeof(D3D11_SUBRESOURCE_DATA));
+    // ZeroMemory(&init_data, sizeof(D3D11_SUBRESOURCE_DATA));
     init_data.pSysMem = indices;
 
     HRESULT hr = ID3D11Device_CreateBuffer(g_d3d_device, &buff_desc, &init_data, &ib->buffer);

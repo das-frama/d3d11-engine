@@ -28,8 +28,8 @@ mesh* mesh_load(const char* filename) {
     mesh* m = malloc(sizeof(mesh));
     memset(m, 0, sizeof(mesh));
 
-    const char* abs = file_abs(filename);
-    load_obj(m, abs);
+    // const char* abs = file_abs(filename);
+    load_obj(m, filename);
 
     return m;
 }

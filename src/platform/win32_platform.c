@@ -84,6 +84,8 @@ bool win32_has_messages() {
 void win32_process_messages() {
     TranslateMessage(&g_msg);
     DispatchMessage(&g_msg);
+
+    Sleep(1);
 }
 
 void win32_sleep(uint ms) {
