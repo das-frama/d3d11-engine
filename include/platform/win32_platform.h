@@ -16,4 +16,7 @@ void win32_set_title(const char* title);
 void win32_process_messages(void);
 void win32_sleep(uint ms);
 
+vec2 win32_mouse_pos(void);
+uchar* win32_keyboard_state(void);
+
 #endif // MOTOR_WIN32_PLATFORM

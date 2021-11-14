@@ -89,3 +89,16 @@ void win32_process_messages() {
 void win32_sleep(uint ms) {
     Sleep(ms);     
 }
+
+vec2 win32_mouse_pos() {
+    POINT pos = {0};
+    GetCursorPos(&pos);
+
+    return vec2_new(pos.x, pos.y);
+}
+
+uchar* win32_keyboard_state(void) {
+    uchar* state = malloc(sizeof(uchar) * 256);
+    GetKeyboardState(state);
+    return state;
+}
