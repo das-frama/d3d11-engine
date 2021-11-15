@@ -1,6 +1,7 @@
 #include "math/vec.h"
 
 #include <stdarg.h>
+#include <assert.h>
 
 /* Vec2 */
 
@@ -42,17 +43,26 @@ vec3 vec3_new(float x, float y, float z) {
 	return v;
 }
 
-vec3 vec3_add(int n, ...) {
+vec3 vec3_add(vec3 v1, vec3 v2) {
+	v1.x += v2.x;
+	v1.y += v2.y;
+	v1.z += v2.z;
+
+	return v1;
+}
+
+vec3 vec3_add_x(int n, ...) {
+	assert(n >= 2);
+
 	va_list args;
 	va_start(args, n);
 
-	vec3 v = vec3_zero();
-	vec3 vv = vec3_zero();
-	for (int i = 0; i < n; i++) {
-		vv = va_arg(args, vec3);
-		v.x += vv.x;
-		v.y += vv.y;
-		v.z += vv.z;
+	vec3 v1 = va_arg(args, vec3);
+	vec3 v2 = va_arg(args, vec3);
+	vec3 v = vec3_add(v1, v2);
+	for (int i = 0; i < n-2; i++) {
+		vec3 temp = va_arg(args, vec3);
+		v = vec3_add(v, temp);
 	}
 
 	va_end(args);
@@ -73,12 +83,11 @@ vec4 vec4_zero() {
 }
 
 vec4 vec4_new(float x, float y, float z, float w) {
-	vec4 v = { 0 };
-	v.x = x;
-	v.y = y;
-	v.z = z;
-	v.w = w;
-	return v;
+	return (vec4) { x, y, z, w };
+}
+
+vec4 vec4_new_vec3(vec3 v) {
+	return (vec4) { v.x, v.y, v.z, 1.0f };
 }
 
 vec4 vec4_add(vec4 v1, vec4 v2) {
@@ -100,21 +109,10 @@ vec4 vec4_mul(vec4 v, float num) {
 
 vec4 vec4_cross(vec4 v1, vec4 v2, vec4 v3) {
 	vec4 v = { 0 };
-    v.x = v1.y * (v2.z * v3.w - v3.z * v2.w) -
-    	  v1.z * (v2.y * v3.w - v3.y * v2.w) + 
-    	  v1.w * (v2.y * v3.z - v2.z * v3.y);
-
-    v.y = -(v1.x * (v2.z * v3.w - v3.z * v2.w) -
-            v1.z * (v2.x * v3.w - v3.x * v2.w) +
-            v1.w * (v2.x * v3.z - v3.x * v2.z));
-
-    v.z = v1.x * (v2.y * v3.w - v3.y * v2.w) - 
-    	  v1.y * (v2.x * v3.w - v3.x * v2.w) +
-          v1.w * (v2.x * v3.y - v3.x * v2.y);
-
-    v.w = -(v1.x * (v2.y * v3.z - v3.y * v2.z) - 
-    		v1.y * (v2.x * v3.z - v3.x * v2.z) +
-            v1.z * (v2.x * v3.y - v3.x * v2.y));
+    v.x = v1.y * (v2.z * v3.w - v3.z * v2.w) - v1.z * (v2.y * v3.w - v3.y * v2.w) + v1.w * (v2.y * v3.z - v2.z * v3.y);
+	v.y = -(v1.x * (v2.z * v3.w - v3.z * v2.w) - v1.z * (v2.x * v3.w - v3.x * v2.w) + v1.w * (v2.x * v3.z - v3.x * v2.z));
+	v.z = v1.x * (v2.y * v3.w - v3.y * v2.w) - v1.y * (v2.x * v3.w - v3.x * v2.w) + v1.w * (v2.x * v3.y - v3.x * v2.y);
+	v.w = -(v1.x * (v2.y * v3.z - v3.y * v2.z) - v1.y * (v2.x * v3.z - v3.x * v2.z) + v1.z * (v2.x * v3.y - v3.x * v2.y));
 
     return v;
 }

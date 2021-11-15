@@ -9,6 +9,8 @@ void motor_init(const char* core_assets_path, const char* name, int w, int h) {
 	graphics_init(w, h);
     graphics_window_set_title(name);
 
+    win32_show_mouse(false);
+
     //log("Init assets...");
     //assets_init(core_assets_path);
 }

@@ -97,8 +97,14 @@ vec2 win32_mouse_pos() {
     return vec2_new(pos.x, pos.y);
 }
 
-uchar* win32_keyboard_state(void) {
-    uchar* state = malloc(sizeof(uchar) * 256);
-    GetKeyboardState(state);
-    return state;
+void win32_keyboard_state(uchar* key_state) {
+    GetKeyboardState(key_state);
+}
+
+void win32_set_mouse_pos(vec2 pos) {
+    SetCursorPos(pos.x, pos.y);
+}
+
+void win32_show_mouse(bool show) {
+    ShowCursor(show);
 }

@@ -3,6 +3,8 @@
 #include "platform/win32_platform.h"
 #include "renderer/d3d11_renderer.h"
 
+// #include "vendor/stb_easy_font.h"
+
 void graphics_init(int w, int h) {
 	// Init win32.
 	win32_init();
@@ -74,6 +76,14 @@ void graphics_present() {
     // Swap buffers.
     d3d11_present(true);
 }
+
+// void graphics_draw_text(int x, int y, const char* text) {
+//     static char buffer[1024];
+//     int num_quads = stb_easy_font_print(x, y, text, NULL, buffer, sizeof(buffer));
+
+//     d3d11
+
+// }
 
 // const_buffer graphics_create_const_buffer(size_t buffer_size) {
 //     return d3d11_create_const_buffer(buffer_size);

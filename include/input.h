@@ -7,6 +7,7 @@
 
 typedef struct {
     int  x, y;
+    bool has_movement;    
     bool left_pressed,  right_pressed;
     bool left_released, right_released;
 } mouse;
