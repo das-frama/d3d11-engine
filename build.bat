@@ -12,10 +12,12 @@ set flags=-nologo -Zi -FC -W1 %warnings_to_ignore%
 set libs=user32.lib dxgi.lib d3d11.lib D3DCompiler.lib dxguid.lib
 
 REM Compile shaders.
-rem fxc /E vsmain /Fh ..\include\shaders\vs_shader.h /T vs_5_0 ..\assets\vertex_shader.hlsl
+rem fxc /E vsmain /Fh ..\include\shaders\mesh_vs.h /Vn g_mesh_vs /T vs_5_0 ..\assets\vertex_shader.hlsl
+rem fxc /E vsmain /Fh ..\include\shaders\grid_vs.h /Vn g_grid_vs /T vs_5_0 ..\assets\grid_vs.hlsl /nologo
+rem fxc /E psmain /Fh ..\include\shaders\grid_ps.h /Vn g_grid_ps /T ps_5_0 ..\assets\grid_ps.hlsl /nologo
 
 REM Compile engine.
-cl %sources% %flags% /c /I ../include /D "_CRT_SECURE_NO_DEPRECATE=1" 
+cl %sources% %flags% /c /EHsc /I ../include /D "_CRT_SECURE_NO_DEPRECATE=1" 
 lib *.obj /OUT:d3d11_motor.lib /NOLOGO
 rem link *.obj %libs% /DLL /OUT:d3d11_motor.dll /DEBUG /NOLOGO
 

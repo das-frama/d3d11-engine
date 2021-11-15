@@ -14,6 +14,7 @@ material* material_load(const char* vspath, const char* pspath) {
 }
 
 void material_unload(material* mat) {
+	
 	// Relase shaders.
 	shader_unload(mat->vs);
 	shader_unload(mat->ps);

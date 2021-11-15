@@ -37,7 +37,7 @@ void graphics_window_resize(int w, int h) {
 void graphics_window_set_title(const char* title) {
     win32_set_title(title);
 }
-
+    
 void graphics_do_one_frame() {
     frame_begin();
 
@@ -77,18 +77,19 @@ void graphics_present() {
     d3d11_present(true);
 }
 
-// void graphics_draw_text(int x, int y, const char* text) {
-//     static char buffer[1024];
-//     int num_quads = stb_easy_font_print(x, y, text, NULL, buffer, sizeof(buffer));
+void graphics_draw_grid(grid* g) {
+    // Set constant buffer.
+    d3d11_vs_set_const_buffer(g->mat.cb);
+    d3d11_ps_set_const_buffer(g->mat.cb);
 
-//     d3d11
+    d3d11_set_vertex_buffer(g->m.vb);
+    d3d11_set_index_buffer(g->m.ib);
 
-// }
+    // Set shaders.
+    d3d11_set_vertex_shader(g->mat.vs);
+    d3d11_set_pixel_shader(g->mat.ps);
 
-// const_buffer graphics_create_const_buffer(size_t buffer_size) {
-//     return d3d11_create_const_buffer(buffer_size);
-// }
-
-// void graphics_update_const_buffer(const_buffer* cb, void* buffer) {
-//     d3d11_update_const_buffer(cb, buffer);
-// }
+    // Draw.
+    // d3d11_draw_indexed_triangle_list(g->m.ib->size_list, 0, 0);
+    d3d11_draw_indexed_line_list(g->m.ib->size_list, 0, 0);
+}

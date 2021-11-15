@@ -30,7 +30,7 @@ ret
 // Approximately 3 instruction slots used
 #endif
 
-const BYTE g_vsmain[] =
+const BYTE g_mesh_vs[] =
 {
      68,  88,  66,  67, 130,  72, 
       1, 175,  99,  68,  29,  49, 

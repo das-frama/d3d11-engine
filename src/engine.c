@@ -9,6 +9,11 @@
 #define TINYOBJ_LOADER_C_IMPLEMENTATION
 #include "vendor/tinyobj_loader_c.h"
 
+/* Precompiled shaders. */
+// #include "shaders/mesh_vs.h"
+// #include "shaders/grid_vs.h"
+// #include "shaders/grid_ps.h"
+
 static char frame_rate_string_var[12];
 
 static int frame_rate_var = 0;

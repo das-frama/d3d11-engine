@@ -14,6 +14,7 @@
 #include "assets/shader.h"
 
 #include "entities/camera.h"
+#include "entities/geometry.h"
 
 /* Engine API. */
 void motor_init(const char* core_assets_path, const char* name, int w, int h);

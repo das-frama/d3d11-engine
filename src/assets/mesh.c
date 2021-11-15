@@ -1,6 +1,6 @@
 #include "assets/mesh.h"
 
-#include "shaders/vs_shader.h"
+#include "shaders/mesh_vs.h"
 #include "vendor/tinyobj_loader_c.h"
 
 #include <windows.h>
@@ -13,13 +13,6 @@ typedef struct {
 
 void load_obj(mesh* m, const char* filename);
 
-
-// mesh* mesh_new() {
-//     mesh* m = malloc(sizeof(mesh));
-//     memset(m, 0, sizeof(mesh));
-//     return m;
-// }
-
 mesh* mesh_load(const char* filename) {
     if (!file_ext_eq(filename, "obj")) {
         error("We are currently only support .obj files");
@@ -28,7 +21,6 @@ mesh* mesh_load(const char* filename) {
     mesh* m = malloc(sizeof(mesh));
     memset(m, 0, sizeof(mesh));
 
-    // const char* abs = file_abs(filename);
     load_obj(m, filename);
 
     return m;
@@ -119,7 +111,7 @@ void load_obj(mesh* m, const char* filename) {
         }
     }
   
-    m->vb = d3d11_create_vertex_buffer(vertices, sizeof(vertex_mesh), attrib.num_vertices, (void*)g_vsmain, _countof(g_vsmain));
+    m->vb = d3d11_create_vertex_buffer(vertices, sizeof(vertex_mesh), attrib.num_vertices, (void*)g_mesh_vs, _countof(g_mesh_vs));
     m->ib = d3d11_create_index_buffer(indices, size_index);
 
     // free tinyobj.

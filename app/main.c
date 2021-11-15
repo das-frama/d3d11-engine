@@ -25,21 +25,14 @@ void light_update(constant* cc) {
 }
 
 void sphere_update(constant* cc, camera* cam, float dt) {
-	static float rot = 0.0f;
-	rot += 0.005f;
+	// static float rot = 0.0f;
+	// rot += 0.005f;
 	
-	cc->world = mat4_translate(vec3_new(sin(0.707f * rot), 0, cos(0.707f * rot)));
+	// cc->world = mat4_translate(vec3_new(sin(0.707f * rot), 0, cos(0.707f * rot)));
+	cc->world = mat4_id();
 	cc->view  = cam->view;
 	cc->proj  = cam->proj;
-	// cc->proj = mat4_orthographic(WIDTH / 100.f, HEIGHT / 100.f, -10.f, 10.f);
-	// cc->proj = mat4_perspective(1.25f, 1920.0f / 1080.0f, 0.1f, 100.f);
 	cc->cam_position = vec4_new_vec3(mat4_translation(cam->world));
-}
-
-void print_cam(camera* cam) {
-	vec3 v = mat4_translation(cam->world);
-	printf("cam.x = %.2f\tcam.y = %.2f\tcam.z = %.2f\n", v.x, v.y, v.z);
-	// printf("forward = %f\tright=%f\ttop=%f\n\n", cam->forward, cam->right, cam->top);
 }
 
 int main() {
@@ -58,8 +51,14 @@ int main() {
 
 	// Data.
 	constant cc = {0};
+	constant_grid cc_grid = {0};
+
+	// Input.
 	input in = {0};
+
+	// Entities.
 	camera cam = camera_new(WIDTH, HEIGHT);
+	grid g = generate_grid(128, 128, 64, 64, vec4_new(1, 1, 1, 1));
 
 	while(motor_running()) {
 		frame_begin();
@@ -72,16 +71,19 @@ int main() {
 
 		// Update.
 		camera_update(&cam, &in, frame_dt());
-		// print_cam(&cam);
-
 		light_update(&cc);
+
+		grid_update(&g, &cam);
+
 		sphere_update(&cc, &cam, frame_dt());
-		material_set_data(sphere_mat, &cc, sizeof(constant));		
+		material_set_data(sphere_mat, &cc, sizeof(constant));
 
 		// Render.
         graphics_clear_screen(0.0f, 0.0f, 0.0f, 1.0f);
 
+        // graphics_draw(&g.m, &g.mat);
         graphics_draw(sphere_mesh, sphere_mat);
+        graphics_draw_grid(&g);
 
         graphics_present();
 

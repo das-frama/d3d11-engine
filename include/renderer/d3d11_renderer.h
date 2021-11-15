@@ -56,6 +56,7 @@ void d3d11_ps_set_const_buffer(const_buffer* cb);
 
 // Vertex and index buffer.
 vertex_buffer* d3d11_create_vertex_buffer(void* vertices, size_t size_vertex, size_t size_list, void* byte_code, size_t size_byte_shader);
+vertex_buffer* d3d11_create_grid_vertex_buffer(void* vertices, size_t size_vertex, size_t size_list, void* byte_code, size_t size_byte_shader);
 index_buffer* d3d11_create_index_buffer(void* indices, size_t size_list);
 void d3d11_release_vertex_buffer(vertex_buffer* vb);
 void d3d11_release_index_buffer(index_buffer* ib);
@@ -70,5 +71,7 @@ void d3d11_set_ps_texture(const texture** t, size_t size);
 // Draw
 void d3d11_draw_indexed_triangle_list(size_t index_count, size_t start_index_location, size_t start_vertex_index);
 void d3d11_draw_triangle_strip(size_t vertex_count, size_t start_vertex_index);
+void d3d11_draw_indexed_line_list(size_t index_count, size_t start_index_location, size_t start_vertex_index);
+// void d3d11_draw_grid(int w, int h);
 
 #endif // MOTOR_D3D11_RENDERER
