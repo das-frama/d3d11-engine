@@ -13,44 +13,45 @@ grid generate_grid(float w, float d, int m, int n, vec4 color) {
     grid g = {0};
     memset(&g, 0, sizeof(grid));
 
-    int vertex_count = m * n;
-    int index_count = (m-1)*(n-1)*6;
+    int vertex_count = (m + n) * 2;
+    int index_count = (m+1 + n+1) * 2;
 
     float half_width = 0.5f * w;
     float half_depth = 0.5f * d;
 
-    float dx = w / (n-1);
-    float dz = d / (m-1);
+    float dx = w / n;
+    float dz = d / m;
 
     // Generate vertices.
+    // float z = half_depth - i * dz;
     vertex_grid* vertices = malloc(sizeof(vertex_grid) * vertex_count);
-    for (int i = 0; i < m; i++) {
-        float z = half_depth - i*dz;
-        for (int j = 0; j < n; j++) {
-            float x = -half_width + j*dx;
-            vertices[i*n+j].pos = vec3_new(x, 0, z);
-            vertices[i*n+j].color = color;
-        }
+    for (int i = 0; i <= m; i++) {
+        float x =  -half_width + i * dx;
+        vertices[i].pos = vec3_new(x, 0, half_depth);
+        vertices[i].color = color;
+        vertices[m+n+i].pos = vec3_new(-x, 0, -half_depth);;
+        vertices[m+n+i].color = color;
+    }
+    for (int i = 0; i <= n; i++) {
+        float z = half_depth - i * dz;
+        vertices[m+i].pos = vec3_new(half_width, 0, z);
+        vertices[m+i].color = color;
+        vertices[(vertex_count-n+i) % vertex_count].pos = vec3_new(-half_width, 0, -z);
+        vertices[(vertex_count-n+i) % vertex_count].color = color;
     }
 
     // Generate indices.
     uint* indices = malloc(sizeof(uint) * index_count);
-    int k = 0; 
-    for (int i = 0; i < m-1; i++) {
-        for (int j = 0; j < n-1; j++) {
-            
-            
-
-            // Quads.
-            // indices[k]   = i*n+j;
-            // indices[k+1] = i*n+(j+1);
-            // indices[k+2] = (i+1)*n+j;
-
-            // indices[k+3] = i*n+(j+1);
-            // indices[k+5] = (i+1)*n+(j+1);
-            // indices[k+4] = (i+1)*n+j;
-            // k += 6; // next quad.
-        }
+    size_t index = 0;
+    for (int i = 0; i <= m; i++) {
+        indices[index] = i;
+        indices[index+1] = vertex_count-m-i;
+        index +=2;
+    }
+    for (int i = 0; i <= n; i++) {
+        indices[index] = (vertex_count-i) % vertex_count;
+        indices[index+1] = n+i;
+        index +=2;
     }
 
     // Create index and vertex buffers.

@@ -58,7 +58,7 @@ int main() {
 
 	// Entities.
 	camera cam = camera_new(WIDTH, HEIGHT);
-	grid g = generate_grid(128, 128, 64, 64, vec4_new(1, 1, 1, 1));
+	grid g = generate_grid(1024, 1024, 64, 64, vec4_new(.5f, .5f, .5f, 1));
 
 	while(motor_running()) {
 		frame_begin();
@@ -82,8 +82,8 @@ int main() {
         graphics_clear_screen(0.0f, 0.0f, 0.0f, 1.0f);
 
         // graphics_draw(&g.m, &g.mat);
-        graphics_draw(sphere_mesh, sphere_mat);
         graphics_draw_grid(&g);
+        graphics_draw(sphere_mesh, sphere_mat);
 
         graphics_present();
 
