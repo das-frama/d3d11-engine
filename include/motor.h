@@ -21,6 +21,7 @@
 void motor_init(const char* core_assets_path, const char* name, int w, int h);
 void motor_close(void);
 
-bool motor_running();
+bool motor_running(void);
+void motor_stop_next(void);
 
 #endif // MOTOR_H

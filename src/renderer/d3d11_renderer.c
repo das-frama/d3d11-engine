@@ -228,14 +228,10 @@ void* d3d11_create_pixel_shader(const void* byte_code, size_t byte_code_size) {
 
 void d3d11_release_vertex_shader(shader* s) {
     SAFE_RELEASE(ID3D11VertexShader, (ID3D11VertexShader*)s->ptr);
-
-    free(s);
 }
 
 void d3d11_release_pixel_shader(shader* s) {
     SAFE_RELEASE(ID3D11PixelShader, (ID3D11PixelShader*)s->ptr);
-
-    free(s);
 }
 
 void d3d11_compile_vertex_shader(
@@ -521,8 +517,6 @@ void d3d11_release_texture(texture* t) {
     SAFE_RELEASE(ID3D11Resource, (ID3D11Resource*)t->ptr);
     SAFE_RELEASE(ID3D11ShaderResourceView, (ID3D11ShaderResourceView*)t->srv);
     SAFE_RELEASE(ID3D11SamplerState, (ID3D11SamplerState*)t->smp);
-
-    free(t);
 }
 
 void d3d11_set_ps_texture(const texture** t, size_t size) {

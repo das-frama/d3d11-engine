@@ -60,6 +60,10 @@ mat4 mat4_scale(vec3 v) {
     return m;
 }
 
+mat4 mat4_scale_by(float f) {
+    return mat4_scale(vec3_new(f, f, f));
+}
+
 mat4 mat4_rotate_x(float x) {
     mat4 m = mat4_id();
 

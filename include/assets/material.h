@@ -29,6 +29,7 @@ void material_unload(material* m);
 
 void material_add_texture(material* m, texture* t);
 void material_remove_texture(material* m, uint index);
+void material_replace_texture(material* m, uint index, texture* t);
 
 void material_set_data(material* m, void* data, size_t size);
 void material_set_mode(material* m, cull_mode mode);

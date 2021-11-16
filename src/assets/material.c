@@ -14,20 +14,23 @@ material* material_load(const char* vspath, const char* pspath) {
 }
 
 void material_unload(material* mat) {
-	
 	// Relase shaders.
-	shader_unload(mat->vs);
 	shader_unload(mat->ps);
+	shader_unload(mat->vs);
 
 	// Relase textures.
 	for (size_t i = 0; i < mat->texs_size; i++) {
 		d3d11_release_texture(mat->texs[i]);
 	}
+	if (mat->texs_size) {
+		arrfree(*mat->texs);
+	}
+
+	mat->texs_size = 0;
 
 	// Relase const buffer.
 	d3d11_release_const_buffer(mat->cb);
 
-	arrfree(*mat->texs);
 	free(mat);
 }
 
@@ -41,6 +44,17 @@ void material_remove_texture(material* mat, uint index) {
 
 	arrdel(mat->texs, index);
 	mat->texs_size = arrlen(mat->texs);
+}
+
+void material_replace_texture(material* mat, uint index, texture* tex) {
+	size_t len = arrlen(mat->texs);
+	if (len == 0) {
+		material_add_texture(mat, tex);
+	} else if (index < len) {
+		mat->texs[index] = tex;
+	} else {
+		warning("trying to replace non-existing texture");
+	}
 }
 
 void material_set_data(material* mat, void* data, size_t size) {

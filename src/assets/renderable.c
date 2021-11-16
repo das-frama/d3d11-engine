@@ -15,9 +15,11 @@ void renderable_delete(renderable* r) {
 		mesh_unload(r->meshes[i]);
 	}
 	arrfree(*r->meshes);
+	r->mesh_size = 0;
 
 	// unload material.
 	material_unload(r->material);
+	
 	free(r);
 }
 

@@ -14,6 +14,7 @@ mat4 mat4_id(void);
 mat4 mat4_translate(vec3 v);
 mat4 mat4_translate_mat4(mat4 m, vec3 v);
 mat4 mat4_scale(vec3 v);
+mat4 mat4_scale_by(float f);
 mat4 mat4_rotate_x(float x);
 mat4 mat4_rotate_y(float y);
 mat4 mat4_rotate_z(float z);

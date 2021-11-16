@@ -22,9 +22,13 @@ void motor_close() {
     graphics_close();
 
     log("Closing assets...");
-    assets_close();
+    // assets_close();
 }
 
 bool motor_running() {
     return !win32_should_quit;
+}
+
+void motor_stop_next() {
+    win32_should_quit = true;
 }

@@ -16,7 +16,7 @@ typedef struct {
 	int w, h;
 } camera;
 
-camera* camera_new(void);
+camera* camera_new(float x, float y, float z);
 void camera_delete(camera* cam);
 
 void camera_update(camera* cam, input* in, float dt);

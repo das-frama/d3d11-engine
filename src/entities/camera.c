@@ -6,7 +6,7 @@
 #define pressed(key) in->keys[key].pressed
 #define released(key) in->keys[key].released
 
-camera* camera_new() {
+camera* camera_new(float x, float y, float z) {
 	camera* cam = malloc(sizeof(camera));
 	memset(cam, 0, sizeof(camera));
 
@@ -22,7 +22,7 @@ camera* camera_new() {
 	cam->top     = 0.0f;
 
 	win32_size(&cam->w, &cam->h);
-	cam->world = mat4_translate(vec3_new(0, 0, 5));
+	cam->world = mat4_translate(vec3_new(x, y, z));
 	cam->view  = mat4_id();
 	cam->proj  = mat4_id();
 
