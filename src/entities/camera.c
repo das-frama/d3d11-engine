@@ -6,26 +6,31 @@
 #define pressed(key) in->keys[key].pressed
 #define released(key) in->keys[key].released
 
-camera camera_new(int w, int h) {
-	camera cam = {0};
+camera* camera_new() {
+	camera* cam = malloc(sizeof(camera));
+	memset(cam, 0, sizeof(camera));
 
-	cam.fov    = 1.25f;
-	cam.znear  = 0.1f;
-	cam.zfar   = 1000.f;
+	cam->fov    = 1.25f;
+	cam->znear  = 0.1f;
+	cam->zfar   = 1000.f;
 
-	cam.rot_x = 0.0f;
-	cam.rot_y = 0.0f;
+	cam->rot_x = 0.0f;
+	cam->rot_y = 0.0f;
 
-	cam.forward = 0.0f;
-	cam.right   = 0.0f;
-	cam.top     = 0.0f;
+	cam->forward = 0.0f;
+	cam->right   = 0.0f;
+	cam->top     = 0.0f;
 
-	win32_size(&cam.w, &cam.h);
-	cam.world = mat4_translate(vec3_new(0, 0, 5));
-	cam.view  = mat4_id();
-	cam.proj  = mat4_id();
+	win32_size(&cam->w, &cam->h);
+	cam->world = mat4_translate(vec3_new(0, 0, 5));
+	cam->view  = mat4_id();
+	cam->proj  = mat4_id();
 
 	return cam;
+}
+
+void camera_delete(camera* cam) {
+	free(cam);
 }
 
 void camera_update(camera* cam, input* in, float dt) {

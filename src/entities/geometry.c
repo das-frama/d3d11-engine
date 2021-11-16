@@ -9,9 +9,10 @@ typedef struct {
     vec4 color;
 } vertex_grid;
 
-grid generate_grid(float w, float d, int m, int n, vec4 color) {
-    grid g = {0};
-    memset(&g, 0, sizeof(grid));
+grid* grid_new(float w, float d, int m, int n, vec4 color) {
+    grid* g = malloc(sizeof(grid));
+    memset(g, 0, sizeof(grid));
+    memset(&g->cc, 0, sizeof(constant_grid));
 
     int vertex_count = (m + n) * 2;
     int index_count = (m+1 + n+1) * 2;
@@ -23,7 +24,6 @@ grid generate_grid(float w, float d, int m, int n, vec4 color) {
     float dz = d / m;
 
     // Generate vertices.
-    // float z = half_depth - i * dz;
     vertex_grid* vertices = malloc(sizeof(vertex_grid) * vertex_count);
     for (int i = 0; i <= m; i++) {
         float x =  -half_width + i * dx;
@@ -55,21 +55,53 @@ grid generate_grid(float w, float d, int m, int n, vec4 color) {
     }
 
     // Create index and vertex buffers.
-    g.m.vb = d3d11_create_grid_vertex_buffer(
-        vertices, sizeof(vertex_grid), vertex_count, (void*)g_grid_vs, _countof(g_grid_vs)
-    );
-    g.m.ib = d3d11_create_index_buffer(indices, index_count);
+    {
+        g->mesh = malloc(sizeof(mesh));
+        memset(g->mesh, 0, sizeof(mesh));
+        g->mesh->vb = d3d11_create_grid_vertex_buffer(
+            vertices, sizeof(vertex_grid), vertex_count, (void*)g_grid_vs, _countof(g_grid_vs)
+        );
+        g->mesh->ib = d3d11_create_index_buffer(indices, index_count);
+    }
 
-    g.mat.vs = shader_load("..\\assets\\grid_vs.hlsl", "vsmain", SHADER_TYPE_VS);
-    g.mat.ps = shader_load("..\\assets\\grid_ps.hlsl", "psmain", SHADER_TYPE_PS);
-    g.mat.cb = d3d11_create_const_buffer(&g.cc, sizeof(constant_grid));
+    {
+        g->material = malloc(sizeof(material));
+        memset(g->material, 0, sizeof(material));
+        g->material->vs = shader_load("..\\assets\\grid_vs.hlsl", "vsmain", SHADER_TYPE_VS);
+        g->material->ps = shader_load("..\\assets\\grid_ps.hlsl", "psmain", SHADER_TYPE_PS);
+        g->material->cb = d3d11_create_const_buffer(&g->cc, sizeof(constant_grid));
+    }
 
     return g;
+}
+
+void grid_delete(grid* g) {
+    mesh_unload(g->mesh);
+    material_unload(g->material);
+
+    free(g);
 }
 
 void grid_update(grid* g, const camera* cam) {
     g->cc.world = mat4_id();
     g->cc.view  = cam->view;
     g->cc.proj  = cam->proj;
-    d3d11_update_const_buffer(g->mat.cb, &g->cc);
+    d3d11_update_const_buffer(g->material->cb, &g->cc);
+}
+
+void grid_draw(const grid* g) {
+    // Set constant buffer.
+    d3d11_vs_set_const_buffer(g->material->cb);
+    d3d11_ps_set_const_buffer(g->material->cb);
+
+    // Set shaders.
+    d3d11_set_vertex_shader(g->material->vs);
+    d3d11_set_pixel_shader(g->material->ps);
+
+    // Vertex and index buffers.
+    d3d11_set_vertex_buffer(g->mesh->vb);
+    d3d11_set_index_buffer(g->mesh->ib);
+
+    // Draw.
+    d3d11_draw_indexed_line_list(g->mesh->ib->size_list, 0, 0);
 }

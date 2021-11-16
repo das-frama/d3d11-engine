@@ -16,13 +16,17 @@ typedef struct {
 } constant_grid;
 
 typedef struct {
-	mesh m;
-	material mat;
+	mesh* mesh;
+	material* material;
+
 	constant_grid cc;
 } grid;
 
 
-grid generate_grid(float width, float depth, int m, int n, vec4 color);
+grid* grid_new(float width, float depth, int m, int n, vec4 color);
+void grid_delete(grid* g);
 void grid_update(grid* g, const camera* cam);
+
+void grid_draw(const grid* g);
 
 #endif // MOTOR_GEOMETRY_H

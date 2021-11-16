@@ -9,21 +9,12 @@
 #define TINYOBJ_LOADER_C_IMPLEMENTATION
 #include "vendor/tinyobj_loader_c.h"
 
-/* Precompiled shaders. */
-// #include "shaders/mesh_vs.h"
-// #include "shaders/grid_vs.h"
-// #include "shaders/grid_ps.h"
-
 static char frame_rate_string_var[12];
-
 static int frame_rate_var = 0;
 static float frame_delta_time = 0.0f;
-
 static uint frame_start_time = 0;
 static uint frame_end_time = 0;
-
 static const float frame_update_rate = 0.5f;
-
 static short frame_counter = 0;
 static float frame_acc_time = 0.0f;
 
@@ -64,8 +55,11 @@ const char* file_abs(const char* filename) {
     if (!_fullpath(buf, filename, PATH_MAX)) {
         error("file %s error", filename);
     }
-    char* res = malloc(strlen(buf) + 1);
-    strncpy(res, buf, PATH_MAX);
+
+    size_t str_size = strlen(buf) + 1;
+    char* res = malloc(sizeof(char) * str_size);
+    strcpy_s(res, str_size, buf);
+
     return res;
 }
 

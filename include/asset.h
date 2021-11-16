@@ -3,10 +3,14 @@
 
 #include "engine.h"
 
+typedef enum {
+	ASSET_
+} asset_type;
+
 typedef struct {
-	const char* path;
 	void* ptr;
 	bool loaded;
+	asset_type type;
 } asset;
 
 /* Asset API. */
