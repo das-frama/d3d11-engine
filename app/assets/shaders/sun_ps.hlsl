@@ -11,7 +11,7 @@ struct PS_INPUT
 
 float4 psmain(PS_INPUT input) : SV_TARGET
 {
-    float4 tex_color = TextureColor.Sample(TextureSampler, (1.0 - input.texcoord)*2.0);
+    float4 tex_color = TextureColor.Sample(TextureSampler, (1.0 - input.texcoord));
 
     return tex_color;
 }

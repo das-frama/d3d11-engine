@@ -2,6 +2,7 @@
 
 #include "shaders/mesh_vs.h"
 #include "vendor/tinyobj_loader_c.h"
+#include "vendor/stb_ds.h"
 
 #include <windows.h>
 
@@ -77,17 +78,18 @@ void load_obj(mesh* m, const char* filename) {
   		error("load obj file error: %s", filename);
     }
 
-    vertex_mesh* vertices = malloc(sizeof(vertex_mesh) * attrib.num_vertices);
-    memset(vertices, 0, sizeof(vertex_mesh) * attrib.num_vertices);
 
-    uint* indices = malloc(sizeof(uint) * attrib.num_faces);
-    memset(vertices, 0, sizeof(uint) * attrib.num_faces);
+    vertex_mesh* vertices = NULL;
+    arrsetcap(vertices, attrib.num_vertices);
+
+    uint* indices = NULL;
+    arrsetcap(indices, attrib.num_faces);
 
     size_t size_index = 0;
     for (size_t i = 0; i < attrib.num_face_num_verts; i++) {
         assert(attrib.face_num_verts[i] % 3 == 0);
-
-        for (size_t j = 0; j < (size_t)attrib.face_num_verts[i]; j++) {
+        size_t face_size = (size_t)attrib.face_num_verts[i];
+        for (size_t j = 0; j < face_size; j++) {
             tinyobj_vertex_index_t index = attrib.faces[i * 3  + j];
 
             float vx = attrib.vertices[index.v_idx * 3 + 0];
@@ -106,13 +108,17 @@ void load_obj(mesh* m, const char* filename) {
             v.texcoord = vec2_new(tx, ty);
             v.normal = vec3_new(nx, ny, nz);
 
-            vertices[index.v_idx] = v;
-            indices[size_index++] = (uint)index.v_idx;
+            arrput(vertices, v);
+            arrput(indices, size_index + j);
         }
+        size_index += face_size;
     }
-  
-    m->vb = d3d11_create_vertex_buffer(vertices, sizeof(vertex_mesh), attrib.num_vertices, (void*)g_mesh_vs, _countof(g_mesh_vs));
-    m->ib = d3d11_create_index_buffer(indices, size_index);
+
+    m->vb = d3d11_create_vertex_buffer(vertices, sizeof(vertex_mesh), arrlen(vertices), (void*)g_mesh_vs, _countof(g_mesh_vs));
+    m->ib = d3d11_create_index_buffer(indices, arrlen(indices));
+
+    arrfree(vertices);
+    arrfree(indices);
 
     // free tinyobj.
     tinyobj_attrib_free(&attrib);
