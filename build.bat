@@ -2,32 +2,64 @@
 if not exist build mkdir build
 pushd build
 
-del *.pdb > NUL 2> NUL
-echo WAITING FOR PDB > lock.tmp
-del *.ilk
-
-set sources=..\src\*.c ..\src\utils\*.c ..\src\platform\*.c ..\src\renderer\*.c ..\src\math\*.c ..\src\assets\*.c ..\src\entities\*.c
-set warnings_to_ignore=-wd4201 -wd4116 -wd4101 -wd4103 -wd4081 -wd4204 -wd4255 -wd4668 -wd4820 -wd4100 -wd4189 -wd4711 -wd4710 -wd4101 -wd4296 -wd4311 -wd4115 -wd4702 -wd4456 -wd4555
-set flags=-nologo -Zi -FC -W1 %warnings_to_ignore%
-set libs=user32.lib dxgi.lib d3d11.lib D3DCompiler.lib dxguid.lib
+REM Process flags.
+set /A flag_s=0
+set /A flag_e=0
+set /A flag_g=0
+set /A flag_c=0
+FOR %%A IN (%*) DO (
+    IF "%%A"=="/s" SET /A flag_s=1
+    IF "%%A"=="/e" SET /A flag_e=1
+    IF "%%A"=="/g" SET /A flag_g=1
+    IF "%%A"=="/c" SET /A flag_c=1
+)
 
 REM Compile shaders.
-rem fxc /E vsmain /Fh ..\include\shaders\mesh_vs.h /Vn g_mesh_vs /T vs_5_0 ..\assets\vertex_shader.hlsl
-rem fxc /E vsmain /Fh ..\include\shaders\grid_vs.h /Vn g_grid_vs /T vs_5_0 ..\assets\grid_vs.hlsl /nologo
-rem fxc /E psmain /Fh ..\include\shaders\grid_ps.h /Vn g_grid_ps /T ps_5_0 ..\assets\grid_ps.hlsl /nologo
+IF %flag_s%==1 (
+    echo Compiling shaders...
+    fxc /E vsmain /Fh ..\include\shaders\mesh_vs.h /Vn g_mesh_vs /T vs_5_0 ..\assets\vertex_shader.hlsl /nologo
+    fxc /E vsmain /Fh ..\include\shaders\grid_vs.h /Vn g_grid_vs /T vs_5_0 ..\assets\grid_vs.hlsl /nologo
+    fxc /E psmain /Fh ..\include\shaders\grid_ps.h /Vn g_grid_ps /T ps_5_0 ..\assets\grid_ps.hlsl /nologo
+)
 
 REM Compile engine.
-cl %sources% %flags% /c /EHsc /I ../include /D "_CRT_SECURE_NO_DEPRECATE=1" 
-lib *.obj /OUT:d3d11_motor.lib /NOLOGO
-rem link *.obj %libs% /DLL /OUT:d3d11_motor.dll /DEBUG /NOLOGO
+set engine_sources=..\src\*.c ..\src\utils\*.c ..\src\platform\*.c ..\src\renderer\*.c ..\src\math\*.c ..\src\assets\*.c ..\src\entities\*.c
+set engine_warnings_to_ignore=-wd4201 -wd4116 -wd4101 -wd4103 -wd4081 -wd4204 -wd4255 -wd4668 -wd4820 -wd4100 -wd4189 -wd4711 -wd4710 -wd4101 -wd4296 -wd4311 -wd4115 -wd4702 -wd4456 -wd4555
+set engine_flags=/c /EHsc /nologo /Zi /FC /W1 %warnings_to_ignore% 
+set engine_libs=user32.lib dxgi.lib d3d11.lib D3DCompiler.lib dxguid.lib
+set engine_out=d3d11_motor
+IF %flag_e%==1 (
+    echo Building the engine...
+    cl %engine_sources% %engine_flags% /I ../include /D "_CRT_SECURE_NO_DEPRECATE=1" 
+    lib *.obj %engine_libs% /OUT:%engine_out%.lib /NOLOGO /IGNORE:4006
+    rem link *.obj %engine_libs% /DLL /OUT:%engine_out%.dll /DEBUG /NOLOGO
+)
 
-REM Compile app.
-cl -Zi /Fedemo.exe -nologo -O2 -FC -W1 ../app/main.c /I ../include /link d3d11_motor.lib %libs% /SUBSYSTEM:CONSOLE
+REM Compile game.
+set game_sources=../app/main.c
+set game_flags=/Zi /nologo /O2 /FC /W1
+set game_libs=d3d11_motor.lib
+set out=demo
+IF %flag_g%==1 (
+    echo Building the game...
+    cl %game_sources% %game_flags% /Fe%out%.exe /I ../include /link %game_libs% /SUBSYSTEM:CONSOLE
 
-REM create symlink to assets.
-rem mklink /D assets ..\app\assets
+    REM create symlink to assets.
+    IF NOT EXIST assets  (
+        mklink /D assets ..\app\assets
+    )
+)
 
-del lock.tmp
-rem del *.obj
+
+REM Clean up.
+IF %flag_c%==1 (
+    echo Clean up build folder...
+    del *.exe > NUL 2> NUL
+    del *.lib > NUL 2> NUL
+    del *.pdb > NUL 2> NUL
+    del *.obj > NUL 2> NUL
+    del *.ilk > NUL 2> NUL
+    rmdir assets > NUL 2> NUL
+)
 
 popd
