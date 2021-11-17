@@ -40,7 +40,7 @@ planet* planet_new(
 
     // load assets
     if (planet_mesh == NULL) {
-        planet_mesh = mesh_load("assets\\meshes\\sphere.obj");
+        planet_mesh = mesh_load("assets\\meshes\\sphere_hq.obj");
     }
     if (planet_mat == NULL) {
        planet_mat = material_load("assets\\shaders\\planet_vs.hlsl", "assets\\shaders\\planet_ps.hlsl");

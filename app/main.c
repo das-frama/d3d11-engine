@@ -16,7 +16,7 @@ int main() {
 
 	// Engine entities.
 	camera* cam = camera_new(0, 50, 0);
-	grid* grid = grid_new(1024, 1024, 64, 64, vec4_new(.5f, .5f, .5f, 1));
+	grid* grid = grid_new(1024, 1024, 64, 64, vec4_new(.5f, .5f, .5f, .25f));
 
 	// Create engine objects.
 	planet* planets[PLANET_SIZE];

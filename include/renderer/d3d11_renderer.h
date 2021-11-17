@@ -23,11 +23,12 @@ typedef struct {
 } const_buffer;
 
 void d3d11_init(int w, int h);
-void d3d11_close();
+void d3d11_close(void);
 
-void d3d11_create_device();
-void d3d11_create_rasterizer_state();
+void d3d11_create_device(void);
+void d3d11_create_rasterizer_state(void);
 void d3d11_create_swap_chain(int w, int h);
+void d3d11_create_blend_state(void);
 
 // Buffers.
 void d3d11_reload_buffers(int w, int h);

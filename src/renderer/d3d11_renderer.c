@@ -16,6 +16,8 @@ static ID3D11Device* g_d3d_device = NULL;
 static ID3D11DeviceContext* g_imm_context = NULL;
 static ID3D11DeviceContext1* g_imm_context1 = NULL;
 
+static ID3D11BlendState* g_blend_state = NULL;
+
 static ID3D11RasterizerState* g_cull_front_face = NULL;
 static ID3D11RasterizerState* g_cull_back_face = NULL;
 
@@ -35,6 +37,8 @@ void d3d11_init(int w, int h) {
     // Create rasterizer state.
     d3d11_create_rasterizer_state();
 
+    d3d11_create_blend_state();
+
     // Reload buffers.
     d3d11_reload_buffers(w, h);
 }
@@ -50,6 +54,7 @@ void d3d11_close() {
     SAFE_RELEASE(ID3D11RenderTargetView, g_rtv);
     SAFE_RELEASE(ID3D11RenderTargetView, g_dsv);
     SAFE_RELEASE(IDXGISwapChain, g_swap_chain);
+    SAFE_RELEASE(ID3D11BlendState, g_blend_state);
 }
 
 void d3d11_create_device() {
@@ -128,6 +133,30 @@ void d3d11_create_rasterizer_state() {
     if (FAILED(hr)) {
         error("ID3D11Device_CreateRasterizerState error");
     }
+}
+
+void d3d11_create_blend_state(void) {
+    D3D11_BLEND_DESC desc;
+    desc.AlphaToCoverageEnable = false;
+    desc.IndependentBlendEnable = false;
+    desc.RenderTarget[0].BlendEnable = true;
+    desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+    desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+    desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+    desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+    desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+    HRESULT hr = ID3D11Device_CreateBlendState(g_d3d_device, &desc, &g_blend_state);
+    if (FAILED(hr)) {
+        error("ID3D11Device_CreateBlendState error");
+    }
+
+    float blend_factor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    uint mask = 0xffffffff;
+    ID3D11DeviceContext_OMSetBlendState(g_imm_context, g_blend_state, blend_factor, mask);
+    // g_pImmediateContext->OMSetBlendState(NULL, NULL, NULL);
 }
 
 void d3d11_reload_buffers(int w, int h) {
