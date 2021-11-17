@@ -28,6 +28,6 @@ void renderable_add_mesh(renderable* r, mesh* m) {
 	r->mesh_size = arrlen(r->meshes);
 }
 
-void renderable_add_material(renderable* r, material* mat) {
+void renderable_set_material(renderable* r, material* mat) {
 	r->material = mat;
 }

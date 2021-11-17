@@ -20,7 +20,7 @@ int main() {
 
 	// Create engine objects.
 	planet* planets[PLANET_SIZE];
-	planets[0] = planet_new(0.0f,  20.0f, 0.0f, 0.0f, 0.0f, "assets\\textures\\sun.jpg");
+	planets[0] = sun_new();
 	planets[1] = planet_new(30.0f, 1.0f,  1.0f, 0.0f, 0.0171f, "assets\\textures\\mercury.jpg");
 	planets[2] = planet_new(42.0f, 0.39f, 2.85f, -177.4f, 0.0041f, "assets\\textures\\venus.jpg");
 	planets[3] = planet_new(55.0f, 3.0f, 0.24f, 0.0f, 1.0f, "assets\\textures\\earth_day.jpg");
@@ -59,7 +59,8 @@ int main() {
 	}
 
 	// release application assets.
-	for (int i = 0; i < PLANET_SIZE; i++) {
+	sun_delete(planets[0]);
+	for (int i = 1; i < PLANET_SIZE; i++) {
 		planet_delete(planets[i]);
 	}
 	planet_delete_static();

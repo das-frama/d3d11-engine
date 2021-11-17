@@ -17,6 +17,6 @@ renderable* renderable_new(void);
 void renderable_delete(renderable* r);
 
 void renderable_add_mesh(renderable* r, mesh* m);
-void renderable_add_material(renderable* r, material* mat);
+void renderable_set_material(renderable* r, material* mat);
 
 #endif // MOTOR_RENDARABLE_H
