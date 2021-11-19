@@ -12,7 +12,7 @@ renderable* renderable_new(void) {
 void renderable_delete(renderable* r) {
 	// unload meshes.
 	for (int i = 0; i < r->mesh_size; i++) {
-		mesh_unload(r->meshes[i]);
+		mesh_delete(r->meshes[i]);
 	}
 	arrfree(*r->meshes);
 	r->mesh_size = 0;

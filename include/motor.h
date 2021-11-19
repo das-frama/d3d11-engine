@@ -3,7 +3,6 @@
 
 /* Engine includes. */
 #include "engine.h"
-// #include "asset.h"
 #include "graphics.h"
 #include "platform.h"
 #include "input.h"
@@ -14,11 +13,14 @@
 #include "assets/material.h"
 #include "assets/shader.h"
 
+#include "entities/light.h"
 #include "entities/camera.h"
-#include "entities/geometry.h"
+#include "entities/grid.h"
+
+#include "utils/geometry.h"
 
 /* Engine API. */
-void motor_init(const char* core_assets_path, const char* name, int w, int h);
+void motor_init(const char* name, int w, int h);
 void motor_close(void);
 
 bool motor_running(void);

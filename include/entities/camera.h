@@ -13,6 +13,8 @@ typedef struct {
 	float rot_x, rot_y;
 	float forward, right, top;
 
+	float speed;
+
 	int w, h;
 } camera;
 

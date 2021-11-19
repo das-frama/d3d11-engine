@@ -13,7 +13,9 @@ typedef struct {
 	shader_type type;
 } shader;
 
-shader* shader_load(const char* filename, const char* entry_point, shader_type type);
-void shader_unload(shader* s);
+shader* shader_new(void);
+shader* shader_new_load(const char* filename, const char* entry_point, shader_type type);
+void shader_delete(shader* s);
+void shader_set_byte(shader* s, const void* byte_code, size_t byte_code_size);
 
 #endif // MOTOR_SHADER_H

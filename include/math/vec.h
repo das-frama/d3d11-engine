@@ -25,6 +25,9 @@ vec3 vec3_new(float, float, float);
 vec3 vec3_add(vec3 v1, vec3 v2);
 vec3 vec3_add_x(int n, ...);
 vec3 vec3_mul(vec3, float);
+vec3 vec3_div(vec3 v, float num);
+float vec3_length(vec3 v);
+vec3 vec3_normalize(vec3 v);
 
 vec4 vec4_zero(void);
 vec4 vec4_new(float, float, float, float);

@@ -39,7 +39,7 @@ asset* assets_load(const char* filename) {
 	// Check asset by its type.
 	if (file_ext_eq(filename, "obj")) {
 		// Renderable object.
-		mesh* m = mesh_load(filename);
+		mesh* m = mesh_new_load(filename);
 		a->ptr = (void*)m;
 	} else {
 		error("Loading of %s is not implemented yet.", filename);

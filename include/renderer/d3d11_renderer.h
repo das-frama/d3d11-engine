@@ -57,7 +57,6 @@ void d3d11_ps_set_const_buffer(const_buffer* cb);
 
 // Vertex and index buffer.
 vertex_buffer* d3d11_create_vertex_buffer(void* vertices, size_t size_vertex, size_t size_list, void* byte_code, size_t size_byte_shader);
-vertex_buffer* d3d11_create_grid_vertex_buffer(void* vertices, size_t size_vertex, size_t size_list, void* byte_code, size_t size_byte_shader);
 index_buffer* d3d11_create_index_buffer(void* indices, size_t size_list);
 void d3d11_release_vertex_buffer(vertex_buffer* vb);
 void d3d11_release_index_buffer(index_buffer* ib);

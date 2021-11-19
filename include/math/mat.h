@@ -11,10 +11,12 @@ mat4 mat4_new(float mat[4][4]);
 mat4 mat4_zero(void);
 mat4 mat4_id(void);
 
+mat4 mat4_transpose(mat4 m);
 mat4 mat4_translate(vec3 v);
 mat4 mat4_translate_mat4(mat4 m, vec3 v);
 mat4 mat4_scale(vec3 v);
 mat4 mat4_scale_by(float f);
+mat4 mat4_rotate(float x, float y, float z);
 mat4 mat4_rotate_x(float x);
 mat4 mat4_rotate_y(float y);
 mat4 mat4_rotate_z(float z);
@@ -24,6 +26,8 @@ float mat4_det(mat4 m);
 mat4 mat4_orthographic(float w, float h, float znear, float zfar);
 mat4 mat4_perspective(float fov, float aspect, float znear, float zfar);
 
+mat4 mat4_add(mat4 m1, mat4 m2);
+mat4 mat4_add_x(int n, ...);
 mat4 mat4_mul(mat4 m1, mat4 m2);
 mat4 mat4_mul_x(int n, ...);
 

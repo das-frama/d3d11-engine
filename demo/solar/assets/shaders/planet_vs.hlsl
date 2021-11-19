@@ -38,7 +38,8 @@ VS_OUTPUT vsmain(VS_INPUT input)
 
     // output.position = input.position;
     output.texcoord = input.texcoord;
-    output.normal = input.normal;
+    output.normal = normalize(mul(input.normal, world));
+    // output.normal = input.normal;
 
     return output;
 }

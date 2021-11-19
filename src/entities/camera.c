@@ -21,6 +21,8 @@ camera* camera_new(float x, float y, float z) {
 	cam->right   = 0.0f;
 	cam->top     = 0.0f;
 
+	cam->speed = 0.2f;
+
 	win32_size(&cam->w, &cam->h);
 	cam->world = mat4_translate(vec3_new(x, y, z));
 	cam->view  = mat4_id();
@@ -53,20 +55,22 @@ void camera_update(camera* cam, input* in, float dt) {
 		if (pressed('Q')) 		cam->top = -1.0f;
 		else if (pressed('E')) 	cam->top = 1.0f;
 
+		if (pressed(VK_SHIFT))  cam->speed = 2.0f;
+
  		if (released('W') || released('S')) cam->forward = 0.0f;
 		if (released('A') || released('D')) cam->right = 0.0f;
 		if (released('Q') || released('E')) cam->top = 0.0f;
+		if (released(VK_SHIFT)) cam->speed = 0.2f;
+
 	}
 
     // Transform matrices.
     {
     	mat4 world_cam = mat4_mul_x(3, mat4_id(), mat4_rotate_x(cam->rot_x), mat4_rotate_y(cam->rot_y - 4.5f));
-		// mat4 world_cam = mat4_id();
-    	vec3 z_dir = vec3_mul(mat4_z_direction(world_cam), cam->forward * 0.2f);
-    	vec3 x_dir = vec3_mul(mat4_x_direction(world_cam), cam->right * 0.2f);
-    	vec3 y_dir = vec3_mul(mat4_y_direction(mat4_id()), cam->top * 0.2f);
+    	vec3 z_dir = vec3_mul(mat4_z_direction(world_cam), cam->forward * cam->speed);
+    	vec3 x_dir = vec3_mul(mat4_x_direction(world_cam), cam->right * cam->speed);
+    	vec3 y_dir = vec3_mul(mat4_y_direction(mat4_id()), cam->top * cam->speed);
     	vec3 new_pos = vec3_add_x(4, mat4_translation(cam->world), z_dir, x_dir, y_dir);
-    	// vec3 new_pos = vec3_add_x(4, mat4_translation(cam->world), z_dir, x_dir, y_dir);
     	world_cam = mat4_translate_mat4(world_cam, new_pos);
     	
     	cam->world = world_cam;

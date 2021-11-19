@@ -21,6 +21,7 @@ typedef struct {
     float orb_period;
     float rot_speed;
     float tilt_angle;
+    float rot_angle;
 
     vec3 pos;
     planet_constant cc;
@@ -57,9 +58,13 @@ planet* planet_new(
     p->orb_period = orb_period;
     p->tilt_angle = tilt_angle;
     p->rot_speed  = rot_speed;
+    p->rot_angle  = 0.0f;
 
     p->cc.light_position = vec4_new(0, 0, 0, 0);
     p->cc.light_radius   = 400.0f;
+
+    // mat4 light_rot = mat4_rotate_y(-4.5f);
+    p->cc.light_direction = vec4_new(0, 0, 1, 1);
 
     return p;
 }
@@ -93,20 +98,22 @@ void planet_update(planet* p, float dt) {
     p->pos.x = p->distance * sin(p->orb_period*dt);
     p->pos.y = 0;
     p->pos.z = 0.8f * p->distance * cos(p->orb_period*dt);
+
+    p->rot_angle += p->rot_speed * 0.05f;
 }
 
 void planet_draw(planet* p, const camera* cam) {
     mat4 scale = mat4_scale_by(p->radius);
+    mat4 rotate = mat4_rotate_y(to_rad(p->rot_angle));
     mat4 translate = mat4_translate(p->pos);
+    mat4 world = mat4_mul_x(3, scale, rotate, translate);
 
-    p->cc.world = mat4_mul(scale, translate);
+    p->cc.world = world;
     p->cc.view  = cam->view;
     p->cc.proj  = cam->proj;
     p->cc.camera_position = vec4_new_vec3(mat4_translation(cam->world));
+    // p->cc.light_direction = vec4_new_vec3(mat4_z_direction(world));
 
-    // light
-    mat4 light_rot = mat4_rotate_y(-4.5f);
-    p->cc.light_direction = vec4_new_vec3(mat4_z_direction(light_rot))  ;
 
     material_set_data(p->rnd->material, &p->cc, sizeof(planet_constant));
     material_replace_texture(p->rnd->material, 0, p->tex);

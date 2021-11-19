@@ -11,8 +11,24 @@ typedef struct {
 	index_buffer* ib;
 } mesh;
 
-// mesh* mesh_new(void);
-mesh* mesh_load(const char* filename);
-void mesh_unload(mesh* m);
+typedef struct {
+    vec3 pos;
+    vec2 texcoord;
+    vec3 normal;
+} vertex;
+
+typedef struct {
+	vertex* vertices; 
+	size_t vertices_count; 
+
+	uint* indices;
+	size_t indices_count;
+} mesh_data;
+
+mesh* mesh_new(void);
+mesh* mesh_new_load(const char* filename);
+void mesh_delete(mesh* m);
+void mesh_data_set(mesh*m, mesh_data* md);
+void mesh_data_delete(mesh_data* md);
 
 #endif // MOTOR_MESH_H

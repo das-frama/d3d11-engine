@@ -2,7 +2,7 @@
 
 extern bool win32_should_quit;
 
-void motor_init(const char* core_assets_path, const char* name, int w, int h) {
+void motor_init(const char* name, int w, int h) {
 	log("Starting motor...");
 
 	log("Init graphics...");
@@ -21,7 +21,7 @@ void motor_close() {
     log("Closing graphics...");
     graphics_close();
 
-    log("Closing assets...");
+    // log("Closing assets...");
     // assets_close();
 }
 

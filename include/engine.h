@@ -21,6 +21,8 @@
 
 /* Defines. */
 #define PATH_MAX 512
+#define PI 3.14159265358
+#define PI2 6.28318530718
 
 #ifdef _WIN32 
 #define SEPARATOR "\\"
@@ -34,7 +36,6 @@
 #include "math/mat.h"
 
 /* Typedefs. */
-// typedef short int     sint;
 typedef unsigned int  uint;
 typedef unsigned char uchar;
 
@@ -42,6 +43,9 @@ typedef unsigned char uchar;
 void frame_begin(void);
 void frame_end(void);
 float frame_dt(void);
+
+/* Macroces. */
+#define to_rad(n) (n * 0.017453f)
 
 /* File Helpers. */
 const char* file_ext(const char* filename);
@@ -51,6 +55,5 @@ void* file_load_win32(const char* filename, size_t* len);
 
 /* String Helpers. */
 const wchar_t* to_wch(const char *c);
-
 
 #endif // MOTOR_ENGINE_H

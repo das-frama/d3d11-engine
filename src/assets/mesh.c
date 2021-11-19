@@ -6,32 +6,49 @@
 
 #include <windows.h>
 
-typedef struct {
-    vec3 pos;
-    vec2 texcoord;
-    vec3 normal;
-} vertex_mesh;
+mesh_data* load_obj(const char* filename);
 
-void load_obj(mesh* m, const char* filename);
-
-mesh* mesh_load(const char* filename) {
-    if (!file_ext_eq(filename, "obj")) {
-        error("We are currently only support .obj files");
-    }
-
+mesh* mesh_new() {
     mesh* m = malloc(sizeof(mesh));
     memset(m, 0, sizeof(mesh));
-
-    load_obj(m, filename);
 
     return m;
 }
 
-void mesh_unload(mesh* m) {
+mesh* mesh_new_load(const char* filename) {
+    if (!file_ext_eq(filename, "obj")) {
+        error("We are currently only support .obj files");
+    }
+
+    mesh* m = mesh_new();
+    mesh_data* md = load_obj(filename);
+    log("vertices_count = %d", md->vertices_count);
+    log("indices = %d", md->indices_count);
+
+    mesh_data_set(m, md);
+    mesh_data_delete(md);
+
+    return m;
+}
+
+void mesh_delete(mesh* m) {
     d3d11_release_vertex_buffer(m->vb);
     d3d11_release_index_buffer(m->ib);
 
     free(m);
+}
+
+void mesh_data_set(mesh* m, mesh_data* md) {
+    m->vb = d3d11_create_vertex_buffer(md->vertices, sizeof(vertex), md->vertices_count, (void*)g_mesh_vs, _countof(g_mesh_vs));
+    m->ib = d3d11_create_index_buffer(md->indices, md->indices_count);
+}
+
+void mesh_data_delete(mesh_data* md) {
+    arrfree(md->vertices);
+    arrfree(md->indices);
+    md->vertices = NULL;
+    md->indices = NULL;
+    free(md); 
 }
 
 void file_data(void* ctx, const char* filename, const int is_mtl, 
@@ -62,7 +79,7 @@ void file_data(void* ctx, const char* filename, const int is_mtl,
 
 
 // load new mesh.
-void load_obj(mesh* m, const char* filename) {
+mesh_data* load_obj(const char* filename) {
 	tinyobj_attrib_t attrib;
  	tinyobj_shape_t* shapes = NULL;
   	tinyobj_material_t* materials = NULL;
@@ -78,12 +95,13 @@ void load_obj(mesh* m, const char* filename) {
   		error("load obj file error: %s", filename);
     }
 
+    mesh_data* md = malloc(sizeof(mesh_data));
+    memset(md, 0, sizeof(mesh_data));
 
-    vertex_mesh* vertices = NULL;
-    arrsetcap(vertices, attrib.num_vertices);
-
-    uint* indices = NULL;
-    arrsetcap(indices, attrib.num_faces);
+    md->vertices = NULL;
+    arrsetcap(md->vertices, attrib.num_vertices);
+    md->indices = NULL;
+    arrsetcap(md->indices, attrib.num_faces);
 
     size_t size_index = 0;
     for (size_t i = 0; i < attrib.num_face_num_verts; i++) {
@@ -103,25 +121,24 @@ void load_obj(mesh* m, const char* filename) {
             float ny = attrib.normals[index.vn_idx * 3 + 1];
             float nz = attrib.normals[index.vn_idx * 3 + 2];
 
-            vertex_mesh v = {0};
+            vertex v = {0};
             v.pos = vec3_new(vx, vy, vz);
             v.texcoord = vec2_new(tx, ty);
             v.normal = vec3_new(nx, ny, nz);
 
-            arrput(vertices, v);
-            arrput(indices, size_index + j);
+            arrput(md->vertices, v);
+            arrput(md->indices, size_index + j);
         }
         size_index += face_size;
     }
 
-    m->vb = d3d11_create_vertex_buffer(vertices, sizeof(vertex_mesh), arrlen(vertices), (void*)g_mesh_vs, _countof(g_mesh_vs));
-    m->ib = d3d11_create_index_buffer(indices, arrlen(indices));
-
-    arrfree(vertices);
-    arrfree(indices);
+    md->vertices_count = arrlen(md->vertices);
+    md->indices_count = arrlen(md->indices);
 
     // free tinyobj.
     tinyobj_attrib_free(&attrib);
     tinyobj_shapes_free(shapes, num_shapes);
     tinyobj_materials_free(materials, num_materials);
+
+    return md;
 }

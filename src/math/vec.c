@@ -76,6 +76,26 @@ vec3 vec3_mul(vec3 v, float num) {
 	return v;
 }
 
+vec3 vec3_div(vec3 v, float num) {
+	v.x /= num;
+	v.y /= num;
+	v.z /= num;
+	return v;
+}
+
+float vec3_length(vec3 v) {
+	return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+}
+
+vec3 vec3_normalize(vec3 v) {
+	float len = vec3_length(v);
+	if (len == 0.0f) {
+		return vec3_zero();
+	} else {
+		return vec3_div(v, len);
+	}
+}
+
 /* Vec4 */
 
 vec4 vec4_zero() {

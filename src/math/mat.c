@@ -32,6 +32,18 @@ mat4 mat4_id() {
 	return m;
 }
 
+mat4 mat4_transpose(mat4 m) {
+    mat4 out = mat4_zero();
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            out.mat[j][i] = m.mat[i][j];
+        }
+    }
+
+    return out;
+}
+
 mat4 mat4_translate(vec3 v) {
     mat4 m = mat4_id();
 
@@ -62,6 +74,14 @@ mat4 mat4_scale(vec3 v) {
 
 mat4 mat4_scale_by(float f) {
     return mat4_scale(vec3_new(f, f, f));
+}
+
+mat4 mat4_rotate(float x, float y, float z) {
+    mat4 mx = mat4_rotate_x(x);
+    mat4 my = mat4_rotate_y(y);
+    mat4 mz = mat4_rotate_z(z);
+
+    return mat4_add_x(3, mx, my, mz);
 }
 
 mat4 mat4_rotate_x(float x) {
@@ -109,21 +129,6 @@ mat4 mat4_orthographic(float w, float h, float znear, float zfar) {
 }
 
 mat4 mat4_perspective(float fov, float aspect, float znear, float zfar) {
-    // float right = -(znear * tanf(fov));
-    // float left = -right;
-
-    // float top = aspect * znear * tanf(fov);
-    // float bottom = -top;
-
-    // mat4 m = mat4_zero();
-    // m.mat[0][0] = (2.0 * znear) / (right - left);
-    // m.mat[1][1] = (2.0 * znear) / (top - bottom);
-    // m.mat[0][2] = (right + left) / (right - left);
-    // m.mat[1][2] = (top + bottom) / (top - bottom);
-    // m.mat[2][2] = (-zfar - znear) / (zfar - znear);
-    // m.mat[3][2] = -1.0;
-    // m.mat[2][3] = ( -(2.0 * znear) * zfar) / (zfar - znear);
-
     mat4 m = mat4_zero();
 
     float yscale = 1.0f / tan(fov / 2.0f);
@@ -168,6 +173,35 @@ mat4 mat4_inverse(mat4 m) {
     return out;
 }
 
+mat4 mat4_add(mat4 m1, mat4 m2) {
+    mat4 out = mat4_new(m1.mat);
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            out.mat[i][j] = m1.mat[i][j] + m2.mat[i][j];
+        }
+    }
+
+    return out;
+}
+
+mat4 mat4_add_x(int n, ...) {
+    assert(n >= 2);
+
+    va_list args;
+    va_start(args, n);
+
+    mat4 m1 = va_arg(args, mat4);
+    mat4 m2 = va_arg(args, mat4);
+    mat4 m = mat4_add(m1, m2);
+    for (int i = 0; i < n-2; i++) {
+        mat4 temp = va_arg(args, mat4);
+        m = mat4_add(m, temp);
+    }
+
+    va_end(args);
+    return m;
+}
 
 mat4 mat4_mul(mat4 m1, mat4 m2) {
     mat4 out = mat4_new(m1.mat);

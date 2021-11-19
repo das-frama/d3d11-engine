@@ -7,16 +7,16 @@ material* material_load(const char* vspath, const char* pspath) {
 	memset(mat, 0, sizeof(material));
 
 	// Load shaders.
-	mat->vs = shader_load(vspath, "vsmain", SHADER_TYPE_VS);
-	mat->ps = shader_load(pspath, "psmain", SHADER_TYPE_PS);
+	mat->vs = shader_new_load(vspath, "vsmain", SHADER_TYPE_VS);
+	mat->ps = shader_new_load(pspath, "psmain", SHADER_TYPE_PS);
 
 	return mat;
 }
 
 void material_unload(material* mat) {
 	// Relase shaders.
-	shader_unload(mat->ps);
-	shader_unload(mat->vs);
+	shader_delete(mat->ps);
+	shader_delete(mat->vs);
 
 	// Relase textures.
 	for (size_t i = 0; i < mat->texs_size; i++) {

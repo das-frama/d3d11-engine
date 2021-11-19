@@ -394,43 +394,6 @@ vertex_buffer* d3d11_create_vertex_buffer(
     return vb;
 }
 
-vertex_buffer* d3d11_create_grid_vertex_buffer(
-    void* vertices, size_t size_vertex, size_t size_list, void* byte_code, size_t size_byte_shader
-) {
-    vertex_buffer* vb = malloc(sizeof(vertex_buffer));
-    memset(vb, 0, sizeof(vertex_buffer));
-    vb->size_vertex = size_vertex;
-    vb->size_list = size_list;
-
-    D3D11_BUFFER_DESC buff_desc;
-    buff_desc.Usage = D3D11_USAGE_DEFAULT;
-    buff_desc.ByteWidth = size_vertex * size_list;
-    buff_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    buff_desc.CPUAccessFlags = 0;
-    buff_desc.MiscFlags = 0;
-
-    D3D11_SUBRESOURCE_DATA init_data;
-    init_data.pSysMem = vertices;
-
-    HRESULT hr = ID3D11Device_CreateBuffer(g_d3d_device, &buff_desc, &init_data, &vb->buffer);
-    if (FAILED(hr)) {
-        error("CreateBuffer was not create successfully");
-    }
-
-    D3D11_INPUT_ELEMENT_DESC layout[] = {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-    };
-    hr = ID3D11Device_CreateInputLayout(
-        g_d3d_device, layout, _countof(layout), byte_code, size_byte_shader, &vb->input_layout
-    );
-    if (FAILED(hr)) {
-        error("CreateInputLayout was not create successfully");
-    }
-
-    return vb;
-}
-
 index_buffer* d3d11_create_index_buffer(void* indices, size_t size_list) {
     index_buffer* ib = malloc(sizeof(index_buffer));
     memset(ib, 0, sizeof(index_buffer));
