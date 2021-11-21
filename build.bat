@@ -17,11 +17,19 @@ FOR %%A IN (%*) DO (
 REM Compile shaders.
 IF %flag_s%==1 (
     echo Compiling shaders...
+    REM Mesh shader.
     fxc /E vsmain /Fh ..\include\shaders\mesh_vs.h /Vn g_mesh_vs /T vs_5_0 ..\assets\mesh_shader.hlsl /nologo
     fxc /E psmain /Fh ..\include\shaders\mesh_ps.h /Vn g_mesh_ps /T ps_5_0 ..\assets\mesh_shader.hlsl /nologo
+
+    REM Grid shader.
     fxc /E vsmain /Fh ..\include\shaders\grid_vs.h /Vn g_grid_vs /T vs_5_0 ..\assets\grid_shader.hlsl /nologo
     fxc /E psmain /Fh ..\include\shaders\grid_ps.h /Vn g_grid_ps /T ps_5_0 ..\assets\grid_shader.hlsl /nologo
+
+    REM Skybox shader.
+    fxc /E vsmain /Fh ..\include\shaders\skybox_vs.h /Vn g_skybox_vs /T vs_5_0 ..\assets\skybox_shader.hlsl /nologo
+    fxc /E psmain /Fh ..\include\shaders\skybox_ps.h /Vn g_skybox_ps /T ps_5_0 ..\assets\skybox_shader.hlsl /nologo
 )
+
 
 REM Compile engine.
 set engine_sources=..\src\*.c ..\src\utils\*.c ..\src\platform\*.c ..\src\renderer\*.c ..\src\math\*.c ..\src\assets\*.c ..\src\entities\*.c

@@ -54,6 +54,7 @@ void grid_update(grid* g, const camera* cam) {
 }
 
 void grid_draw(const grid* g) {
+    d3d11_set_rasterizer_state(CULL_MODE_BACK);
     // Set constant buffer.
     d3d11_vs_set_constant_buffer(g->material->cb);
     d3d11_ps_set_constant_buffer(g->material->cb);

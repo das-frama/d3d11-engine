@@ -2,8 +2,8 @@
 
 #include "utils/geometry.h"
 #include "vendor/stb_ds.h"
-#include "shaders/mesh_vs.h"
-#include "shaders/mesh_ps.h"
+// #include "shaders/mesh_vs.h"
+// #include "shaders/mesh_ps.h"
 
 __declspec(align(16))
 typedef struct {
@@ -46,20 +46,20 @@ void renderable_add_mesh(renderable* r, mesh* m) {
 	r->mesh_size = arrlen(r->meshes);
 }
 
-renderable* renderable_sphere(float radius) {
-	renderable* r = renderable_new();
+// renderable* renderable_sphere(float radius) {
+// 	renderable* r = renderable_new();
 
-	// Generate and set sphere mesh.
-	mesh_data* md = generate_sphere(radius, 30, 30);
-    mesh* msh = mesh_new_data(md);
-    mesh_data_delete(md);
-    renderable_add_mesh(r, msh);
+// 	// Generate and set sphere mesh.
+// 	mesh_data* md = generate_sphere(radius, 30, 30);
+//     mesh* msh = mesh_new_data(md);
+//     mesh_data_delete(md);
+//     renderable_add_mesh(r, msh);
 
-    // Set default material.
-    shader* vs = shader_new_byte(g_mesh_vs, _countof(g_mesh_vs), SHADER_TYPE_VS);
-    shader* ps = shader_new_byte(g_mesh_ps, _countof(g_mesh_ps), SHADER_TYPE_PS);
-    constant cc = {0};
-    r->material = material_new_(vs, ps, NULL, &cc, sizeof(constant));
+//     // Set default material.
+//     shader* vs = shader_new_byte(g_mesh_vs, _countof(g_mesh_vs), SHADER_TYPE_VS);
+//     shader* ps = shader_new_byte(g_mesh_ps, _countof(g_mesh_ps), SHADER_TYPE_PS);
+//     constant cc = {0};
+//     r->material = material_new_(vs, ps, NULL, &cc, sizeof(constant));
 
-    return r;
-}
+//     return r;
+// }

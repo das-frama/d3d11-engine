@@ -35,11 +35,13 @@ void graphics_draw(renderable* r) {
     }
 
     // Set shaders.
-    d3d11_set_vertex_shader((d3d11_vertex_shader*)r->material->vs);
-    d3d11_set_pixel_shader((d3d11_pixel_shader*)r->material->ps);
+    d3d11_set_vertex_shader((d3d11_vertex_shader*)r->material->vs->ptr);
+    d3d11_set_pixel_shader((d3d11_pixel_shader*)r->material->ps->ptr);
 
     // Set texture.
-    d3d11_set_ps_texture((d3d11_texture**)r->material->texs, r->material->texs_size);
+    if (r->material->texs_size) {
+        d3d11_set_ps_texture((d3d11_texture**)r->material->texs, r->material->texs_size);
+    }
 
     // Set vertex and index buffers.
     for (int i = 0; i < r->mesh_size; i++) {

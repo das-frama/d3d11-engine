@@ -18,7 +18,7 @@ camera* camera_new(float x, float y, float z) {
 
 	cam->fov    = 1.25f;
 	cam->znear  = 0.1f;
-	cam->zfar   = 1100.f;
+	cam->zfar   = 5000.f;
 
 	cam->rot_x = 0.0f;
 	cam->rot_y = 0.0f;
