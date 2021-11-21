@@ -18,8 +18,9 @@ static ID3D11DeviceContext1* g_imm_context1 = NULL;
 
 static ID3D11BlendState* g_blend_state = NULL;
 
-static ID3D11RasterizerState* g_cull_front_face = NULL;
-static ID3D11RasterizerState* g_cull_back_face = NULL;
+static ID3D11RasterizerState* g_rasterer_frontface = NULL;
+static ID3D11RasterizerState* g_rasterer_backface = NULL;
+static ID3D11RasterizerState* g_rasterer_wireframe = NULL;
 
 static IDXGISwapChain* g_swap_chain = NULL;
 static ID3D11RenderTargetView* g_rtv = NULL;
@@ -34,9 +35,10 @@ void d3d11_init(int w, int h) {
     // Create swap chain.
     d3d11_create_swap_chain(w, h);
 
-    // Create rasterizer state.
-    d3d11_create_rasterizer_state();
+    // Create rasterizer states.
+    d3d11_create_rasterizer_states();
 
+    // Create blend state.
     d3d11_create_blend_state();
 
     // Reload buffers.
@@ -49,8 +51,9 @@ void d3d11_close() {
     }
 
     SAFE_RELEASE(ID3D11Device, g_d3d_device);
-    SAFE_RELEASE(ID3D11RasterizerState, g_cull_front_face);
-    SAFE_RELEASE(ID3D11RasterizerState, g_cull_back_face);
+    SAFE_RELEASE(ID3D11RasterizerState, g_rasterer_frontface);
+    SAFE_RELEASE(ID3D11RasterizerState, g_rasterer_backface);
+    SAFE_RELEASE(ID3D11RasterizerState, g_rasterer_wireframe);
     SAFE_RELEASE(ID3D11RenderTargetView, g_rtv);
     SAFE_RELEASE(ID3D11RenderTargetView, g_dsv);
     SAFE_RELEASE(IDXGISwapChain, g_swap_chain);
@@ -115,21 +118,32 @@ void d3d11_create_swap_chain(int w, int h) {
     IDXGIFactory_Release(factory);
 }
 
-void d3d11_create_rasterizer_state() {
+void d3d11_create_rasterizer_states() {
     D3D11_RASTERIZER_DESC desc;
     ZeroMemory(&desc, sizeof(D3D11_RASTERIZER_DESC));
     desc.CullMode = D3D11_CULL_FRONT;
     desc.DepthClipEnable = true;
     desc.FillMode = D3D11_FILL_SOLID;
-    // desc.FillMode = D3D11_FILL_WIREFRAME;
+    desc.AntialiasedLineEnable = true;
+    desc.MultisampleEnable = true;
 
-    HRESULT hr = ID3D11Device_CreateRasterizerState(g_d3d_device, &desc, &g_cull_front_face);
+    // Front face.
+    HRESULT hr = ID3D11Device_CreateRasterizerState(g_d3d_device, &desc, &g_rasterer_frontface);
     if (FAILED(hr)) {
         error("ID3D11Device_CreateRasterizerState error");
     }
 
+    // Back face.
     desc.CullMode = D3D11_CULL_BACK;
-    hr = ID3D11Device_CreateRasterizerState(g_d3d_device, &desc, &g_cull_back_face);
+    hr = ID3D11Device_CreateRasterizerState(g_d3d_device, &desc, &g_rasterer_backface);
+    if (FAILED(hr)) {
+        error("ID3D11Device_CreateRasterizerState error");
+    }
+
+    // Wireframe.
+    desc.CullMode = D3D11_CULL_NONE;
+    desc.FillMode = D3D11_FILL_WIREFRAME;
+    hr = ID3D11Device_CreateRasterizerState(g_d3d_device, &desc, &g_rasterer_wireframe);
     if (FAILED(hr)) {
         error("ID3D11Device_CreateRasterizerState error");
     }
@@ -156,7 +170,6 @@ void d3d11_create_blend_state(void) {
     float blend_factor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
     uint mask = 0xffffffff;
     ID3D11DeviceContext_OMSetBlendState(g_imm_context, g_blend_state, blend_factor, mask);
-    // g_pImmediateContext->OMSetBlendState(NULL, NULL, NULL);
 }
 
 void d3d11_reload_buffers(int w, int h) {
@@ -198,11 +211,17 @@ void d3d11_reload_buffers(int w, int h) {
     }
 }
 
-void d3d11_set_rasterizer_state(bool cull_front) {
-     if (cull_front) {
-        ID3D11DeviceContext_RSSetState(g_imm_context, g_cull_front_face);
-    } else {
-        ID3D11DeviceContext_RSSetState(g_imm_context, g_cull_back_face);
+void d3d11_set_rasterizer_state(rasterizer_state rstate) {
+    switch (rstate) {
+        case RASTERIZER_CULL_FRONT:
+            ID3D11DeviceContext_RSSetState(g_imm_context, g_rasterer_frontface);
+            break;
+        case RASTERIZER_CULL_BACK:
+            ID3D11DeviceContext_RSSetState(g_imm_context, g_rasterer_backface);
+            break;
+        case RASTERIZER_WIREFRAME:
+            ID3D11DeviceContext_RSSetState(g_imm_context, g_rasterer_wireframe);
+            break;
     }
 }
 
@@ -229,38 +248,36 @@ void d3d11_present(bool vsync) {
     IDXGISwapChain_Present(g_swap_chain, (UINT)vsync, 0);
 }
 
-void* d3d11_create_vertex_shader(const void* byte_code, size_t byte_code_size) {
+d3d11_vertex_shader* d3d11_create_vertex_shader(const void* byte_code, size_t byte_code_size) {
     // shader* s = malloc(sizeof(shader));
     // memset(s, 0, sizeof(shader));
-    ID3D11VertexShader* buffer = NULL;
+    d3d11_vertex_shader* shader = NULL;
 
-    HRESULT hr = ID3D11Device_CreateVertexShader(g_d3d_device, byte_code, byte_code_size, NULL, &buffer);
+    HRESULT hr = ID3D11Device_CreateVertexShader(g_d3d_device, byte_code, byte_code_size, NULL, &shader);
     if (FAILED(hr)) {
         error("CreateVertexShader error");
     }
 
-    return (void*)buffer;
+    return shader;
 }
 
-void* d3d11_create_pixel_shader(const void* byte_code, size_t byte_code_size) {
-    // shader* s = malloc(sizeof(shader));
-    // memset(s, 0, sizeof(shader));
-    ID3D11PixelShader* buffer = NULL;
+d3d11_pixel_shader* d3d11_create_pixel_shader(const void* byte_code, size_t byte_code_size) {
+    d3d11_pixel_shader* shader = NULL;
 
-    HRESULT hr = ID3D11Device_CreatePixelShader(g_d3d_device, byte_code, byte_code_size, NULL, &buffer);
+    HRESULT hr = ID3D11Device_CreatePixelShader(g_d3d_device, byte_code, byte_code_size, NULL, &shader);
     if (FAILED(hr)) {
         error("CreatePixelShader error");
     }
 
-    return (void*)buffer;
+    return shader;
 }
 
-void d3d11_release_vertex_shader(shader* s) {
-    SAFE_RELEASE(ID3D11VertexShader, (ID3D11VertexShader*)s->ptr);
+void d3d11_release_vertex_shader(d3d11_vertex_shader* vs) {
+    SAFE_RELEASE(ID3D11VertexShader, vs);
 }
 
-void d3d11_release_pixel_shader(shader* s) {
-    SAFE_RELEASE(ID3D11PixelShader, (ID3D11PixelShader*)s->ptr);
+void d3d11_release_pixel_shader(d3d11_pixel_shader* ps) {
+    SAFE_RELEASE(ID3D11PixelShader, ps);
 }
 
 void d3d11_compile_vertex_shader(
@@ -301,17 +318,16 @@ void d3d11_release_compiled_shaders() {
     ID3DBlob_Release(g_blob);
 }
 
-void d3d11_set_vertex_shader(shader* s) {
-    ID3D11DeviceContext_VSSetShader(g_imm_context, (ID3D11VertexShader*)s->ptr, NULL, 0);
+void d3d11_set_vertex_shader(d3d11_vertex_shader* vs) {
+    ID3D11DeviceContext_VSSetShader(g_imm_context, vs, NULL, 0);
 }
 
-void d3d11_set_pixel_shader(shader* s) {
-    ID3D11DeviceContext_PSSetShader(g_imm_context, (ID3D11PixelShader*)s->ptr, NULL, 0);
+void d3d11_set_pixel_shader(d3d11_pixel_shader* ps) {
+    ID3D11DeviceContext_PSSetShader(g_imm_context, ps, NULL, 0);
 }
 
-const_buffer* d3d11_create_const_buffer(void* data, size_t size) {
-    const_buffer* cb = malloc(sizeof(const_buffer));
-    memset(cb, 0, sizeof(const_buffer));
+d3d11_buffer* d3d11_create_constant_buffer(void* data, size_t size) {
+    d3d11_buffer* buffer = NULL;
 
     D3D11_BUFFER_DESC buff_desc;
     ZeroMemory(&buff_desc, sizeof(D3D11_BUFFER_DESC));
@@ -325,45 +341,42 @@ const_buffer* d3d11_create_const_buffer(void* data, size_t size) {
     if (data != NULL) {
         D3D11_SUBRESOURCE_DATA init_data;
         init_data.pSysMem = data;
-        hr = ID3D11Device_CreateBuffer(g_d3d_device, &buff_desc, &init_data, &cb->buffer);
+        hr = ID3D11Device_CreateBuffer(g_d3d_device, &buff_desc, &init_data, &buffer);
     } else {
-        hr = ID3D11Device_CreateBuffer(g_d3d_device, &buff_desc, NULL, &cb->buffer);
+        hr = ID3D11Device_CreateBuffer(g_d3d_device, &buff_desc, NULL, &buffer);
     }
     if (FAILED(hr)) {
         error("ConstantBuffer not created successfully");
     }
 
-    return cb;
+    return buffer;
 }
 
-void d3d11_update_const_buffer(const_buffer* cb, void* buffer) {
-    ID3D11DeviceContext_UpdateSubresource(g_imm_context, (ID3D11Resource*)cb->buffer, 0, NULL, buffer, 0, 0);
+void d3d11_update_constant_buffer(d3d11_buffer* cb, void* data) {
+    ID3D11DeviceContext_UpdateSubresource(g_imm_context, (ID3D11Resource*)cb, 0, NULL, data, 0, 0);
 }
 
-void d3d11_release_const_buffer(const_buffer* cb) {
-    SAFE_RELEASE(ID3D11Buffer, cb->buffer);
-
-    free(cb);
+void d3d11_release_constant_buffer(d3d11_buffer* cb) {
+    SAFE_RELEASE(ID3D11Buffer, cb);
 }
 
-void d3d11_vs_set_const_buffer(const_buffer* cb) {
-    ID3D11DeviceContext_VSSetConstantBuffers(g_imm_context, 0, 1, &cb->buffer);
+void d3d11_vs_set_constant_buffer(d3d11_buffer* cb) {
+    ID3D11DeviceContext_VSSetConstantBuffers(g_imm_context, 0, 1, &cb);
 }
 
-void d3d11_ps_set_const_buffer(const_buffer* cb) {
-    ID3D11DeviceContext_PSSetConstantBuffers(g_imm_context, 0, 1, &cb->buffer);
+void d3d11_ps_set_constant_buffer(d3d11_buffer* cb) {
+    ID3D11DeviceContext_PSSetConstantBuffers(g_imm_context, 0, 1, &cb);
 }
 
-vertex_buffer* d3d11_create_vertex_buffer(
+d3d11_vertex_buffer* d3d11_create_vertex_buffer(
     void* vertices, size_t size_vertex, size_t size_list, void* byte_code, size_t size_byte_shader
 ) {
-    vertex_buffer* vb = malloc(sizeof(vertex_buffer));
-    memset(vb, 0, sizeof(vertex_buffer));
+    d3d11_vertex_buffer* vb = malloc(sizeof(d3d11_vertex_buffer));
+    memset(vb, 0, sizeof(d3d11_vertex_buffer));
     vb->size_vertex = size_vertex;
     vb->size_list = size_list;
 
     D3D11_BUFFER_DESC buff_desc;
-    // ZeroMemory(&buff_desc, sizeof(D3D11_BUFFER_DESC));
     buff_desc.Usage = D3D11_USAGE_DEFAULT;
     buff_desc.ByteWidth = size_vertex * size_list;
     buff_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -371,7 +384,6 @@ vertex_buffer* d3d11_create_vertex_buffer(
     buff_desc.MiscFlags = 0;
 
     D3D11_SUBRESOURCE_DATA init_data;
-    // ZeroMemory(&init_data, sizeof(D3D11_SUBRESOURCE_DATA));
     init_data.pSysMem = vertices;
 
     HRESULT hr = ID3D11Device_CreateBuffer(g_d3d_device, &buff_desc, &init_data, &vb->buffer);
@@ -394,9 +406,9 @@ vertex_buffer* d3d11_create_vertex_buffer(
     return vb;
 }
 
-index_buffer* d3d11_create_index_buffer(void* indices, size_t size_list) {
-    index_buffer* ib = malloc(sizeof(index_buffer));
-    memset(ib, 0, sizeof(index_buffer));
+d3d11_index_buffer* d3d11_create_index_buffer(void* indices, size_t size_list) {
+    d3d11_index_buffer* ib = malloc(sizeof(d3d11_index_buffer));
+    memset(ib, 0, sizeof(d3d11_index_buffer));
     ib->size_list = size_list;
 
     D3D11_BUFFER_DESC buff_desc;
@@ -417,33 +429,33 @@ index_buffer* d3d11_create_index_buffer(void* indices, size_t size_list) {
     return ib;
 }
 
-void d3d11_release_vertex_buffer(vertex_buffer* vb) {
+void d3d11_release_vertex_buffer(d3d11_vertex_buffer* vb) {
     SAFE_RELEASE(ID3D11Buffer, vb->buffer);
     SAFE_RELEASE(ID3D11InputLayout, vb->input_layout);
 
     free(vb);
 }
 
-void d3d11_release_index_buffer(index_buffer* ib) {
+void d3d11_release_index_buffer(d3d11_index_buffer* ib) {
     SAFE_RELEASE(ID3D11Buffer, ib->buffer);
 
     free(ib);
 }
 
-void d3d11_set_vertex_buffer(vertex_buffer* vb) {
+void d3d11_set_vertex_buffer(d3d11_vertex_buffer* vb) {
     UINT stride = vb->size_vertex;
     UINT offset = 0;
     ID3D11DeviceContext_IASetVertexBuffers(g_imm_context, 0, 1, &vb->buffer, &stride, &offset);
     ID3D11DeviceContext_IASetInputLayout(g_imm_context, vb->input_layout);
 }
 
-void d3d11_set_index_buffer(index_buffer* ib) {
+void d3d11_set_index_buffer(d3d11_index_buffer* ib) {
     ID3D11DeviceContext_IASetIndexBuffer(g_imm_context, ib->buffer, DXGI_FORMAT_R32_UINT, 0);
 }
 
-texture* d3d11_create_texture(uchar* data, int w, int h, int n) {
-    texture* t = malloc(sizeof(texture));
-    memset(t, 0, sizeof(texture));
+d3d11_texture* d3d11_create_texture(uchar* data, int w, int h, int n) {
+    d3d11_texture* tex = malloc(sizeof(d3d11_texture));
+    memset(tex, 0, sizeof(d3d11_texture));
 
     // size_t row_pitch = (w * n + 7) / 8;
     size_t row_pitch = 4 * w * sizeof(uchar);  
@@ -469,7 +481,7 @@ texture* d3d11_create_texture(uchar* data, int w, int h, int n) {
     init_data.SysMemPitch = row_pitch;
     init_data.SysMemSlicePitch = image_size;
 
-    HRESULT hr = ID3D11Device_CreateTexture2D(g_d3d_device, &tex_desc, &init_data, &t->ptr);
+    HRESULT hr = ID3D11Device_CreateTexture2D(g_d3d_device, &tex_desc, &init_data, &tex->tex);
     if (FAILED(hr)) {
         error("CreateTexture2D error");
     }
@@ -480,7 +492,7 @@ texture* d3d11_create_texture(uchar* data, int w, int h, int n) {
     srv_desc.Texture2D.MipLevels = 1;
     srv_desc.Texture2D.MostDetailedMip = 0;
 
-    hr = ID3D11Device_CreateShaderResourceView(g_d3d_device, (ID3D11Resource*)t->ptr, &srv_desc, &t->srv);
+    hr = ID3D11Device_CreateShaderResourceView(g_d3d_device, (ID3D11Resource*)tex->tex, &srv_desc, &tex->srv);
     if (FAILED(hr)) {
        error("CreateShaderResourceView error");
     }
@@ -493,31 +505,31 @@ texture* d3d11_create_texture(uchar* data, int w, int h, int n) {
     sampler_desc.MinLOD = 0;
     sampler_desc.MaxLOD = 1;
 
-    hr = ID3D11Device_CreateSamplerState(g_d3d_device, &sampler_desc, &t->smp);
+    hr = ID3D11Device_CreateSamplerState(g_d3d_device, &sampler_desc, &tex->smp);
     if (FAILED(hr)) {
        error("CreateSamplerState error");
     }
 
-    ID3D11DeviceContext_GenerateMips(g_imm_context, t->srv);
+    ID3D11DeviceContext_GenerateMips(g_imm_context, tex->srv);
     
     free(data);
 
-    return t;
+    return tex;
 }
 
-void d3d11_release_texture(texture* t) {
-    SAFE_RELEASE(ID3D11Resource, (ID3D11Resource*)t->ptr);
-    SAFE_RELEASE(ID3D11ShaderResourceView, (ID3D11ShaderResourceView*)t->srv);
-    SAFE_RELEASE(ID3D11SamplerState, (ID3D11SamplerState*)t->smp);
+void d3d11_release_texture(d3d11_texture* tex) {
+    SAFE_RELEASE(ID3D11Resource, (ID3D11Resource*)tex->tex);
+    SAFE_RELEASE(ID3D11ShaderResourceView, (ID3D11ShaderResourceView*)tex->srv);
+    SAFE_RELEASE(ID3D11SamplerState, (ID3D11SamplerState*)tex->smp);
 }
 
-void d3d11_set_ps_texture(const texture** t, size_t size) {
+void d3d11_set_ps_texture(const d3d11_texture** textures, size_t size) {
     ID3D11ShaderResourceView* list_res[32];
     ID3D11SamplerState* list_sampler[32];
 
     for (size_t i = 0; i < size; i++) {
-        list_res[i] = t[i]->srv;
-        list_sampler[i] = t[i]->smp;
+        list_res[i] = textures[i]->srv;
+        list_sampler[i] = textures[i]->smp;
     }
 
     ID3D11DeviceContext_PSSetShaderResources(g_imm_context, 0, size, list_res);

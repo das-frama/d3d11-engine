@@ -3,12 +3,11 @@
 
 #include "engine.h"
 
-#include "math/vec.h"
 #include "renderer/d3d11_renderer.h"
 
 typedef struct {
-	vertex_buffer* vb;
-	index_buffer* ib;
+	d3d11_vertex_buffer* vb;
+	d3d11_index_buffer* ib;
 } mesh;
 
 typedef struct {
@@ -18,8 +17,8 @@ typedef struct {
 } vertex;
 
 typedef struct {
-	vertex* vertices; 
-	size_t vertices_count; 
+	vertex* vertices;
+	size_t vertices_count;
 
 	uint* indices;
 	size_t indices_count;
@@ -27,6 +26,7 @@ typedef struct {
 
 mesh* mesh_new(void);
 mesh* mesh_new_load(const char* filename);
+mesh* mesh_new_data(mesh_data* md);
 void mesh_delete(mesh* m);
 void mesh_data_set(mesh*m, mesh_data* md);
 void mesh_data_delete(mesh_data* md);

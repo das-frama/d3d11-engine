@@ -2,58 +2,80 @@
 
 #include "platform/win32_platform.h"
 
-static uchar old_keys_state[BUTTON_COUNT] = {0};
-static uchar keys_state[BUTTON_COUNT] = {0};
+static byte old_keys_state[BUTTON_COUNT] = {0};
+static byte keys_state[BUTTON_COUNT] = {0};
 
-void input_update(input* in) {
+static input g_input = {0};
+
+void input_update() {
 	// Update mouse.
 	vec2 cur_pos = win32_mouse_pos();
 
-	if (cur_pos.x != in->mouse.x || cur_pos.y != in->mouse.y) {
-		in->mouse.has_movement = true;
+	if (cur_pos.x != g_input.mouse.x || cur_pos.y != g_input.mouse.y) {
+		g_input.mouse.has_movement = true;
 	} else {
-		in->mouse.has_movement = false;
+		g_input.mouse.has_movement = false;
 	}
 
-	in->mouse.x = cur_pos.x;
-	in->mouse.y = cur_pos.y;
+	g_input.mouse.x = cur_pos.x;
+	g_input.mouse.y = cur_pos.y;
 
-	int w, h;
-	win32_size(&w, &h);
-	win32_set_mouse_pos(vec2_new(w / 2.0f, h / 2.0f));
+	if (g_input.enabled) {
+		int w = 0, h = 0;
+		win32_size(&w, &h);
+		float x = w / 2.0f;
+		float y = h / 2.0f;
+		win32_set_mouse_pos(x, y);
+	}
 
 	// Update keyboard.
 	win32_keyboard_state(keys_state);
 	for (int i = 0; i < BUTTON_COUNT-1; i++) {
 		if (keys_state[i] & 0x80) { // pressed
 			if (i == VK_LBUTTON) { // left button
-			 	in->mouse.left_pressed = true;
-			 	in->mouse.left_released = false;
+			 	g_input.mouse.left_pressed = true;
+			 	g_input.mouse.left_released = false;
 			} else if (i == VK_RBUTTON) {
-			 	in->mouse.right_pressed = true;
-			 	in->mouse.right_released = false;
+			 	g_input.mouse.right_pressed = true;
+			 	g_input.mouse.right_released = false;
 			} else {
-				in->keys[i].pressed = true;
-				in->keys[i].released = false;
+				g_input.keys[i].pressed = true;
+				g_input.keys[i].released = false;
 			}
 		} else { // released
 			if (keys_state[i] != old_keys_state[i]) {
 				if (i == VK_LBUTTON) { // left button
-				 	in->mouse.left_pressed = false;
-				 	in->mouse.left_released = true;
+				 	g_input.mouse.left_pressed = false;
+				 	g_input.mouse.left_released = true;
 				} else if (i == VK_RBUTTON) {
-				 	in->mouse.right_pressed = false;
-				 	in->mouse.right_released = true;
+				 	g_input.mouse.right_pressed = false;
+				 	g_input.mouse.right_released = true;
 				} else {
-					in->keys[i].pressed = false;
-					in->keys[i].released = true;
+					g_input.keys[i].pressed = false;
+					g_input.keys[i].released = true;
 				}
 			} else {
-				in->keys[i].pressed = false;
-				in->keys[i].released = false;
+				g_input.keys[i].pressed = false;
+				g_input.keys[i].released = false;
 			}
 		}
 	}
 
-	memcpy(old_keys_state, keys_state, sizeof(uchar) * BUTTON_COUNT);
+	memcpy(old_keys_state, keys_state, sizeof(byte) * BUTTON_COUNT);
+}
+
+input* input_get() {
+	return &g_input;
+}
+
+void input_enable(bool enable) {
+	g_input.enabled = enable;
+}
+
+bool input_key_pressed(uchar key_code) {
+	return g_input.keys[key_code].pressed;
+}
+
+bool input_key_released(uchar key_code) {
+	return g_input.keys[key_code].released;
 }

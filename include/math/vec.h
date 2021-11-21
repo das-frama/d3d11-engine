@@ -1,6 +1,8 @@
 #ifndef MOTOR_VEC_H
 #define MOTOR_VEC_H
 
+#define color(r, g, b, a) vec4_new(r,g,b,a)
+
 typedef struct {
     float x, y;
 } vec2;
@@ -12,7 +14,6 @@ typedef struct {
 typedef struct {
     float x, y, z, w;
 } vec4;
-
 
 vec2 vec2_zero(void);
 vec2 vec2_new(float, float);

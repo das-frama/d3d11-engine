@@ -9,11 +9,13 @@ typedef struct {
 
     vec3 color;
 
+    int index;
 } light;
 
 light* light_new(void);
 light* light_new_position(vec3 pos);
 void light_delete(light* l);
+void light_delete_all(void);
 
 void light_update(light* l);
 

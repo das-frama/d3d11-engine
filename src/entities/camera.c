@@ -1,18 +1,24 @@
 #include "entities/camera.h"
 
+#include "input.h"
+#include "window.h"
+
 #include "math/vec.h"
 #include "math/mat.h"
+
+#include "vendor/stb_ds.h"
 
 #define pressed(key) in->keys[key].pressed
 #define released(key) in->keys[key].released
 
+static camera** cameras = NULL;
+
 camera* camera_new(float x, float y, float z) {
-	camera* cam = malloc(sizeof(camera));
-	memset(cam, 0, sizeof(camera));
+	camera* cam = calloc(1, sizeof(camera));
 
 	cam->fov    = 1.25f;
 	cam->znear  = 0.1f;
-	cam->zfar   = 1000.f;
+	cam->zfar   = 1100.f;
 
 	cam->rot_x = 0.0f;
 	cam->rot_y = 0.0f;
@@ -23,19 +29,33 @@ camera* camera_new(float x, float y, float z) {
 
 	cam->speed = 0.2f;
 
-	win32_size(&cam->w, &cam->h);
+	window_size(&cam->w, &cam->h);
 	cam->world = mat4_translate(vec3_new(x, y, z));
 	cam->view  = mat4_id();
 	cam->proj  = mat4_id();
+
+	arrput(cameras, cam);
+	cam->index = arrlen(cameras) - 1;
 
 	return cam;
 }
 
 void camera_delete(camera* cam) {
+	arrdel(cameras, cam->index);
 	free(cam);
 }
 
-void camera_update(camera* cam, input* in, float dt) {
+void camera_delete_all() {
+	for (size_t i = 0; i < arrlen(cameras); i++) {
+        free(cameras[i]);
+    }
+
+    arrfree(cameras);
+}
+
+void camera_update(camera* cam, float dt) {
+	input* in = input_get();
+
 	// Change camera orbit.
 	{
 		if (in->mouse.has_movement) {
@@ -61,7 +81,6 @@ void camera_update(camera* cam, input* in, float dt) {
 		if (released('A') || released('D')) cam->right = 0.0f;
 		if (released('Q') || released('E')) cam->top = 0.0f;
 		if (released(VK_SHIFT)) cam->speed = 0.2f;
-
 	}
 
     // Transform matrices.
@@ -76,5 +95,11 @@ void camera_update(camera* cam, input* in, float dt) {
     	cam->world = world_cam;
     	cam->view = mat4_inverse(world_cam);
     	cam->proj = mat4_perspective(cam->fov, (float)cam->w / (float)cam->h, cam->znear, cam->zfar);
+    }
+}
+
+void camera_update_all(float dt) {
+	for (size_t i = 0; i < arrlen(cameras); i++) {
+        camera_update(cameras[i], dt);
     }
 }

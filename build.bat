@@ -17,9 +17,10 @@ FOR %%A IN (%*) DO (
 REM Compile shaders.
 IF %flag_s%==1 (
     echo Compiling shaders...
-    fxc /E vsmain /Fh ..\include\shaders\mesh_vs.h /Vn g_mesh_vs /T vs_5_0 ..\assets\vertex_shader.hlsl /nologo
-    fxc /E vsmain /Fh ..\include\shaders\grid_vs.h /Vn g_grid_vs /T vs_5_0 ..\assets\grid_vs.hlsl /nologo
-    fxc /E psmain /Fh ..\include\shaders\grid_ps.h /Vn g_grid_ps /T ps_5_0 ..\assets\grid_ps.hlsl /nologo
+    fxc /E vsmain /Fh ..\include\shaders\mesh_vs.h /Vn g_mesh_vs /T vs_5_0 ..\assets\mesh_shader.hlsl /nologo
+    fxc /E psmain /Fh ..\include\shaders\mesh_ps.h /Vn g_mesh_ps /T ps_5_0 ..\assets\mesh_shader.hlsl /nologo
+    fxc /E vsmain /Fh ..\include\shaders\grid_vs.h /Vn g_grid_vs /T vs_5_0 ..\assets\grid_shader.hlsl /nologo
+    fxc /E psmain /Fh ..\include\shaders\grid_ps.h /Vn g_grid_ps /T ps_5_0 ..\assets\grid_shader.hlsl /nologo
 )
 
 REM Compile engine.
@@ -36,7 +37,7 @@ IF %flag_e%==1 (
 )
 
 REM Compile game.
-set game_sources=..\demo\solar\solar.c
+set game_sources=..\demo\solar\main.c
 set game_flags=/Zi /nologo /O2 /FC /W1
 set game_libs=d3d11_motor.lib
 set out=solar

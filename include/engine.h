@@ -38,6 +38,7 @@
 /* Typedefs. */
 typedef unsigned int  uint;
 typedef unsigned char uchar;
+typedef unsigned char byte;
 
 /* Engine core. */
 void frame_begin(void);

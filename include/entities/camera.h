@@ -2,7 +2,6 @@
 #define MOTOR_CAMERA_H
 
 #include "engine.h"
-#include "input.h"
 
 typedef struct {
 	mat4 world, view, proj;
@@ -16,11 +15,15 @@ typedef struct {
 	float speed;
 
 	int w, h;
+
+	int index;
 } camera;
 
 camera* camera_new(float x, float y, float z);
 void camera_delete(camera* cam);
+void camera_delete_all(void);
 
-void camera_update(camera* cam, input* in, float dt);
+void camera_update(camera* cam, float dt);
+void camera_update_all(float dt);
 
 #endif // MOTOR_CAMERA_H

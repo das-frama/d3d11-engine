@@ -101,10 +101,11 @@ void win32_keyboard_state(uchar* key_state) {
     GetKeyboardState(key_state);
 }
 
-void win32_set_mouse_pos(vec2 pos) {
-    SetCursorPos(pos.x, pos.y);
+void win32_set_mouse_pos(float x, float y) {
+    SetCursorPos(x, y);
 }
 
 void win32_show_mouse(bool show) {
     ShowCursor(show);
+    UpdateWindow(g_window);
 }

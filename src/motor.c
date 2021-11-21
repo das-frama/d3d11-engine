@@ -1,34 +1,30 @@
 #include "motor.h"
 
-extern bool win32_should_quit;
-
-void motor_init(const char* name, int w, int h) {
+void motor_init(const char* title, int w, int h) {
 	log("Starting motor...");
+
+    log("Init window...");
+    window_init();
+    window_create(w, h);
 
 	log("Init graphics...");
 	graphics_init(w, h);
-    graphics_window_set_title(name);
 
-    win32_show_mouse(false);
+    // Setup window.
+    log("Show window...");
+    window_set_title(title);
+    window_show(true);
 
-    //log("Init assets...");
-    //assets_init(core_assets_path);
+    game_start();
 }
 
 void motor_close() {
     log("Closing motor...");
+    game_stop();
 
     log("Closing graphics...");
     graphics_close();
 
-    // log("Closing assets...");
-    // assets_close();
-}
-
-bool motor_running() {
-    return !win32_should_quit;
-}
-
-void motor_stop_next() {
-    win32_should_quit = true;
+    log("Closing window...");
+    window_close();
 }

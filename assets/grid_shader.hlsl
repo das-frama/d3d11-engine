@@ -8,7 +8,6 @@ struct VS_INPUT
 struct VS_OUTPUT
 {
     float4 position: SV_POSITION;
-    float4 color: COLOR0;
 };
 
 cbuffer constant : register(b0)
@@ -31,7 +30,15 @@ VS_OUTPUT vsmain(VS_INPUT input)
     // screen space.
     output.position = mul(output.position, proj);
 
-    output.color = color;
-
     return output;
+}
+
+struct PS_INPUT
+{
+    float4 position: SV_POSITION;
+};
+
+float4 psmain(PS_INPUT input) : SV_TARGET
+{
+    return color;
 }

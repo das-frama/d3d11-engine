@@ -2,34 +2,58 @@
 
 #include "vendor/stb_ds.h"
 
-material* material_load(const char* vspath, const char* pspath) {
+material* material_new() {
 	material* mat = malloc(sizeof(material));
 	memset(mat, 0, sizeof(material));
-
-	// Load shaders.
-	mat->vs = shader_new_load(vspath, "vsmain", SHADER_TYPE_VS);
-	mat->ps = shader_new_load(pspath, "psmain", SHADER_TYPE_PS);
 
 	return mat;
 }
 
-void material_unload(material* mat) {
+material* material_new_(shader* vs, shader* ps, texture* tex, void* data, size_t data_size) {
+	material* mat = material_new();
+
+	// Set shaders.
+	mat->vs = vs;
+	mat->ps = ps;
+
+	// Set texture.
+	if (tex) {
+		material_add_texture(mat, tex);
+	}
+
+	// Set data.
+	if (data) {
+		material_set_data(mat, data, data_size);
+	}
+
+	// Set raster state mode.
+	mat->mode = CULL_MODE_BACK;
+
+	return mat;
+}
+
+void material_delete(material* mat) {
 	// Relase shaders.
-	shader_delete(mat->ps);
 	shader_delete(mat->vs);
+	shader_delete(mat->ps);
+	mat->vs = NULL;
+	mat->ps = NULL;
 
 	// Relase textures.
 	for (size_t i = 0; i < mat->texs_size; i++) {
-		d3d11_release_texture(mat->texs[i]);
+		texture_delete(mat->texs[i]);
 	}
 	if (mat->texs_size) {
 		arrfree(*mat->texs);
 	}
-
+	mat->texs = NULL;
 	mat->texs_size = 0;
 
 	// Relase const buffer.
-	d3d11_release_const_buffer(mat->cb);
+	if (mat->cb) {
+		d3d11_release_constant_buffer(mat->cb);
+		mat->cb = NULL;
+	}
 
 	free(mat);
 }
@@ -59,12 +83,8 @@ void material_replace_texture(material* mat, uint index, texture* tex) {
 
 void material_set_data(material* mat, void* data, size_t size) {
 	if (mat->cb == NULL) {
-		mat->cb = d3d11_create_const_buffer(data, size);
+		mat->cb = d3d11_create_constant_buffer(data, size);
 	} else {
-		d3d11_update_const_buffer(mat->cb, data);
+		d3d11_update_constant_buffer(mat->cb, data);
 	}
-}
-
-void material_set_mode(material* mat, cull_mode mode) {
-	d3d11_set_rasterizer_state(mode == CULL_MODE_FRONT);
 }

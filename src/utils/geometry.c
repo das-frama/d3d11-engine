@@ -3,8 +3,7 @@
 #include "vendor/stb_ds.h"
 
 mesh_data* generate_grid(float w, float d, int m, int n) {
-    mesh_data* md = malloc(sizeof(mesh_data));
-    memset(md, 0, sizeof(mesh_data));
+    mesh_data* md = calloc(1, sizeof(mesh_data));
 
     int vertex_count = (m + n) * 2;
     int index_count = (m+1 + n+1) * 2;
@@ -43,12 +42,12 @@ mesh_data* generate_grid(float w, float d, int m, int n) {
     for (int i = 0; i <= m; i++) {
         md->indices[index] = i;
         md->indices[index+1] = vertex_count-m-i;
-        index +=2;
+        index += 2;
     }
     for (int i = 0; i <= n; i++) {
         md->indices[index] = (vertex_count-i) % vertex_count;
         md->indices[index+1] = n+i;
-        index +=2;
+        index += 2;
     }
 
     md->vertices_count = vertex_count;
@@ -58,8 +57,7 @@ mesh_data* generate_grid(float w, float d, int m, int n) {
 }
 
 mesh_data* generate_sphere(float radius, size_t slice_count, size_t stack_count) {
-    mesh_data* md = malloc(sizeof(mesh_data));
-    memset(md, 0, sizeof(mesh_data));
+    mesh_data* md = calloc(1, sizeof(mesh_data));
 
     arrsetcap(md->vertices, stack_count * (slice_count + 1));
     arrsetcap(md->indices, slice_count * 3);

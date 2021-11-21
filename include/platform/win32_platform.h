@@ -18,7 +18,7 @@ void win32_sleep(uint ms);
 
 vec2 win32_mouse_pos(void);
 void win32_keyboard_state(uchar* key_state);
-void win32_set_mouse_pos(vec2 pos);
+void win32_set_mouse_pos(float x, float y);
 void win32_show_mouse(bool show);
 
 #endif // MOTOR_WIN32_PLATFORM

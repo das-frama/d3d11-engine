@@ -4,12 +4,12 @@
 #include "engine.h"
 
 typedef struct {
-	ID3D11Texture2D* ptr;
-	ID3D11ShaderResourceView* srv;
-	ID3D11SamplerState* smp;
+	void* ptr;
+	int w, h, bit;
 } texture;
 
-texture* texture_load(const char* filename);
-void texture_unload(texture* t);
+texture* texture_new(void);
+texture* texture_new_load(const char* filename);
+void texture_delete(texture* tex);
 
 #endif // MOTOR_TEXTURE_H

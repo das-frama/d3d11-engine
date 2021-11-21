@@ -9,10 +9,7 @@
 mesh_data* load_obj(const char* filename);
 
 mesh* mesh_new() {
-    mesh* m = malloc(sizeof(mesh));
-    memset(m, 0, sizeof(mesh));
-
-    return m;
+    return (mesh*)calloc(1, sizeof(mesh));
 }
 
 mesh* mesh_new_load(const char* filename) {
@@ -22,8 +19,6 @@ mesh* mesh_new_load(const char* filename) {
 
     mesh* m = mesh_new();
     mesh_data* md = load_obj(filename);
-    log("vertices_count = %d", md->vertices_count);
-    log("indices = %d", md->indices_count);
 
     mesh_data_set(m, md);
     mesh_data_delete(md);
@@ -31,10 +26,18 @@ mesh* mesh_new_load(const char* filename) {
     return m;
 }
 
+mesh* mesh_new_data(mesh_data* md) {
+    mesh* m = mesh_new();
+    mesh_data_set(m, md);
+
+    return m;
+}
+
 void mesh_delete(mesh* m) {
     d3d11_release_vertex_buffer(m->vb);
     d3d11_release_index_buffer(m->ib);
-
+    m->vb = NULL;
+    m->ib = NULL;
     free(m);
 }
 

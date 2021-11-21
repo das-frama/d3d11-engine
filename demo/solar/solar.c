@@ -1,15 +1,6 @@
 #include <motor.h>
 
-__declspec(align(16))
-typedef struct {
-    mat4 world;
-    mat4 view;
-    mat4 proj;
-    vec4 light_direction;
-    vec4 camera_position;
-    vec4 light_position;
-    float light_radius;
-} planet_constant;
+#define PLANET_COUNT 5
 
 typedef struct {
     renderable* rnd;
@@ -20,10 +11,9 @@ typedef struct {
     float orb_period;
     float rot_speed;
     float tilt_angle;
-    float rot_angle;
 
+    float rot_angle;
     vec3 pos;
-    planet_constant cc;
 } planet;
 
 static mesh* g_planet_mesh = NULL;
@@ -32,9 +22,7 @@ static material* g_planet_mat = NULL;
 
 planet* planet_new(float distance, float diameter, float orb_period, float tilt_angle, 
                    float rot_speed, const char* texture_path) {
-    planet* p = malloc(sizeof(planet));
-    memset(p, 0, sizeof(planet));
-    memset(&p->cc, 0, sizeof(planet_constant));
+    planet* p = calloc(1, sizeof(planet));
 
 	if (g_planet_md == NULL) {
 		g_planet_md = generate_sphere(1.0f, 30, 30);
@@ -61,11 +49,6 @@ planet* planet_new(float distance, float diameter, float orb_period, float tilt_
     p->rot_speed  = rot_speed;
     p->rot_angle  = 0.0f;
 
-    p->cc.light_position = vec4_new(0, 0, 0, 0);
-    p->cc.light_radius   = 400.0f;
-    // mat4 light_rot = mat4_rotate_y(-4.5f);
-    // p->cc.light_direction = vec4_new_vec3(mat4_z_direction(light_rot));
-
     return p;
 }
 
@@ -80,7 +63,7 @@ planet* sun_new() {
 
 void planet_delete(planet* p) {
     texture_unload(p->tex);
-    free(p->rnd);
+    renderable_delete(p->rnd);
     free(p);
 }
 
@@ -120,19 +103,21 @@ void planet_draw(planet* p, const camera* cam) {
     graphics_draw(p->rnd);
 }
 
-#define PLANET_COUNT 5
 int main() {
 	// init engine.
 	motor_init("D3D11 Solar System", 1920, 1080);
+
 	// Camera.
 	camera* cam = camera_new(0, 0, 50);
 
 	// Grid.
-	grid* grid = grid_new(1024, 1024, 64, 64, vec4_new(.5f, .5f, .5f, .25f));
+	grid* grid = grid_new(1024, 1024, 64, 64, color(.5f, .5f, .5f, .25f));
 
-	// Planet.
+    // Skybox.
+    skybox* sky = skybox_new("assets\\textures\\milkyway.jpg");
+
+	// Planets.
     planet* planets[PLANET_COUNT];
-    // distance, diameter,  orb_period, tilt_angle, rot_speed
     // sun
 	planets[0] = sun_new();
     // mercury
@@ -152,7 +137,7 @@ int main() {
 		frame_begin();
 
 		// Platform events.
-		platform_events();
+		window_events();
 
 		// Input events.
 		input_update(&in);
@@ -171,6 +156,7 @@ int main() {
 		// Render.
 		graphics_clear_screen(0.0f, 0.0f, 0.0f, 0.0f);
 		grid_draw(grid);
+        graphics_draw(sky_rnd);
 		for (int i = 0; i < PLANET_COUNT; i++) {
           planet_draw(planets[i], cam);
         }
@@ -184,10 +170,12 @@ int main() {
 	for (int i = 1; i < PLANET_COUNT; i++) {
         planet_delete(planets[i]);
     }
+    renderable_delete(sky_rnd);
 
 	// Release engine resources.
 	grid_delete(grid);
 	camera_delete(cam);
+    skybox_delete(sky);
 	motor_close();
 
 	return EXIT_SUCCESS;

@@ -1,16 +1,10 @@
 #include "graphics.h"
 
-#include "platform/win32_platform.h"
 #include "renderer/d3d11_renderer.h"
 
+static fill_mode g_mode = FILL_MODE_SOLID;
+
 void graphics_init(int w, int h) {
-	// Init win32.
-	win32_init();
-
-    // Default values.
-	win32_create(w, h);
-    win32_show(true);
-
     // Init d3d11.
     d3d11_init(w, h);
 
@@ -20,47 +14,32 @@ void graphics_init(int w, int h) {
 
 void graphics_close() {
     d3d11_close();
-    win32_close();
 }
 
-void graphics_window_size(int *w, int *h) {
-    win32_size(w, h);
-}
-
-void graphics_window_resize(int w, int h) {
-    win32_resize(w, h);
-    d3d11_set_viewport_size(w, h);
-}
-
-void graphics_window_set_title(const char* title) {
-    win32_set_title(title);
-}
-    
-void graphics_do_one_frame() {
-    frame_begin();
-
-    graphics_present();
-    
-    frame_end();
-}
-
-void graphics_clear_screen(float r, float g, float b, float a) {
+void graphics_clear(float r, float g, float b, float a) {
     d3d11_clear_render_target_color(r, g, b, a);
 }
 
 void graphics_draw(renderable* r) {
-    d3d11_set_rasterizer_state(r->material->cull_mode == CULL_MODE_FRONT);
+    // Set object rasterizer state.
+    if (g_mode == FILL_MODE_SOLID) {
+        d3d11_set_rasterizer_state(r->material->mode);
+    } else if (g_mode == FILL_MODE_WIREFRAME) {
+        d3d11_set_rasterizer_state(RASTERIZER_WIREFRAME);
+    }
 
     // Set constant buffer.
-    d3d11_vs_set_const_buffer(r->material->cb);
-    d3d11_ps_set_const_buffer(r->material->cb);
+    if (r->material->cb) {
+        d3d11_vs_set_constant_buffer(r->material->cb);
+        d3d11_ps_set_constant_buffer(r->material->cb);
+    }
 
     // Set shaders.
-    d3d11_set_vertex_shader(r->material->vs);
-    d3d11_set_pixel_shader(r->material->ps);
+    d3d11_set_vertex_shader((d3d11_vertex_shader*)r->material->vs);
+    d3d11_set_pixel_shader((d3d11_pixel_shader*)r->material->ps);
 
     // Set texture.
-    d3d11_set_ps_texture(r->material->texs, r->material->texs_size);
+    d3d11_set_ps_texture((d3d11_texture**)r->material->texs, r->material->texs_size);
 
     // Set vertex and index buffers.
     for (int i = 0; i < r->mesh_size; i++) {
