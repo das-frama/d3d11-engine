@@ -11,6 +11,7 @@ void window_show(bool show);
 void window_size(int* w, int* h);
 void window_resize(int w, int h);
 void window_set_title(const char* title);
+rect window_screen_area();
 
 void window_show_mouse(bool show);
 void window_set_mouse_pos(float x, float y);

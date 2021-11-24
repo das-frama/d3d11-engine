@@ -7,17 +7,18 @@
 #include "graphics.h"
 #include "input.h"
 #include "game.h"
+#include "entity.h"
 
-#include "assets/renderable.h"
+// #include "assets/renderable.h"
 #include "assets/mesh.h"
 #include "assets/texture.h"
 #include "assets/material.h"
 #include "assets/shader.h"
 
-#include "entities/light.h"
-#include "entities/camera.h"
-#include "entities/grid.h"
-#include "entities/skybox.h"
+// #include "entities/light.h"
+// #include "entities/camera.h"
+// #include "entities/grid.h"
+// #include "entities/skybox.h"
 
 #include "utils/geometry.h"
 

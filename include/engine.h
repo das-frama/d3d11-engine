@@ -7,6 +7,7 @@
 #include <string.h>  // strcpy, strcat
 #include <assert.h>  // assert
 #include <stdbool.h> // bool
+// #include <tgmath.h>
 #include <math.h> // cos, sin, pow
 
 /* Windows includes. */
@@ -34,6 +35,7 @@
 #include "utils/log.h"
 #include "math/vec.h"
 #include "math/mat.h"
+#include "math/rect.h"
 
 /* Typedefs. */
 typedef unsigned int  uint;

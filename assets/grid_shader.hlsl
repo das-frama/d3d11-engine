@@ -8,6 +8,7 @@ struct VS_INPUT
 struct VS_OUTPUT
 {
     float4 position: SV_POSITION;
+    float2 texcoord: TEXCOORD0;
 };
 
 cbuffer constant : register(b0)
@@ -15,7 +16,8 @@ cbuffer constant : register(b0)
     row_major float4x4 world;
     row_major float4x4 view;
     row_major float4x4 proj;
-    float4 color;
+    // float4 color;
+    // float4 color1;
 };
 
 VS_OUTPUT vsmain(VS_INPUT input)
@@ -30,15 +32,21 @@ VS_OUTPUT vsmain(VS_INPUT input)
     // screen space.
     output.position = mul(output.position, proj);
 
+    output.texcoord = input.texcoord;
+
     return output;
 }
 
 struct PS_INPUT
 {
     float4 position: SV_POSITION;
+    float2 texcoord: TEXCOORD0;
 };
 
 float4 psmain(PS_INPUT input) : SV_TARGET
 {
-    return color;
+    // float4 color = float4(0,0,1,1);
+    // float4 color1 = float4(1,0,0,1);
+    // return float4(lerp(color, color1, input.texcoord.y));
+    return float4(.66f,.66f,.66f,.5f);
 }

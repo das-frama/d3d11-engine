@@ -5,20 +5,17 @@
 
 #include "assets/mesh.h"
 #include "assets/material.h"
+#include "entities/camera.h"
 
-typedef struct {
-	mesh** meshes;
-	size_t mesh_size;
-
-	material* material;
-} renderable;
 
 renderable* renderable_new(void);
 void renderable_delete(renderable* r);
-void renderable_delete_only(renderable* r,bool del_meshes, bool del_mat);
+void renderable_delete_only(renderable* r, bool del_meshes, bool del_mat);
 
 void renderable_add_mesh(renderable* r, mesh* m);
 void renderable_set_material(renderable* r, material* mat);
+
+// void renderable_update(renderable* r, camera* cam);
 
 /* Usefull shortcuts. */
 renderable* renderable_sphere(float radius);

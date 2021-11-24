@@ -2,7 +2,7 @@
 #include "assets/mesh.h"
 #include "vendor/stb_ds.h"
 
-mesh_data* generate_grid(float w, float d, int m, int n) {
+mesh_data* generate_grid(int width, int depth, int m, int n) {
     mesh_data* md = calloc(1, sizeof(mesh_data));
 
     int vertex_count = (m + n) * 2;
@@ -11,11 +11,11 @@ mesh_data* generate_grid(float w, float d, int m, int n) {
     arrsetcap(md->vertices, vertex_count);
     arrsetcap(md->indices,  index_count);
 
-    float half_width = 0.5f * w;
-    float half_depth = 0.5f * d;
+    float half_width = 0.5f * (float)width;
+    float half_depth = 0.5f * (float)depth;
 
-    float dx = w / n;
-    float dz = d / m;
+    float dx = (float)width / (float)n;
+    float dz = (float)depth / (float)m;
 
     // Generate vertices.
     for (int i = 0; i <= m; i++) {

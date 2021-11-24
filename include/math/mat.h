@@ -36,6 +36,8 @@ vec3 mat4_z_direction(mat4 m);
 vec3 mat4_y_direction(mat4 m);
 vec3 mat4_x_direction(mat4 m);
 
+mat4 mat4_from_quat(quat q);
+
 void mat4_print(const mat4* m);
 
 #endif // MOTOR_MAT_H

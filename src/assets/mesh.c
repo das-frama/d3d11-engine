@@ -18,6 +18,7 @@ mesh* mesh_new_load(const char* filename) {
     }
 
     mesh* m = mesh_new();
+    m->topology = TOPOLOGY_TRIANGLE_LIST;
     mesh_data* md = load_obj(filename);
 
     mesh_data_set(m, md);
@@ -28,6 +29,7 @@ mesh* mesh_new_load(const char* filename) {
 
 mesh* mesh_new_data(mesh_data* md) {
     mesh* m = mesh_new();
+    m->topology = TOPOLOGY_TRIANGLE_LIST;
     mesh_data_set(m, md);
 
     return m;

@@ -3,27 +3,30 @@
 
 #include "engine.h"
 
-typedef struct {
-	mat4 world, view, proj;
+#include "entity.h"
 
-	float fov;
-	float znear, zfar;
+// typedef struct {
+// 	mat4 world, view, proj;
 
-	float rot_x, rot_y;
-	float forward, right, top;
+// 	float fov;
+// 	float znear, zfar;
 
-	float speed;
+// 	float rot_x, rot_y;
+// 	float forward, right, top;
 
-	int w, h;
+// 	float speed;
 
-	int index;
-} camera;
+// 	int w, h;
 
-camera* camera_new(float x, float y, float z);
-void camera_delete(camera* cam);
-void camera_delete_all(void);
+// 	int index;
+// } camera;
 
-void camera_update(camera* cam, float dt);
-void camera_update_all(float dt);
+entity_id camera_new(float x, float y, float z);
+void camera_delete(entity_id id);
+void camera_update(camera* cam);
+// void camera_delete_all(void);
+
+// camera* camera_get(size_t index);
+// void camera_update_all(float dt);
 
 #endif // MOTOR_CAMERA_H

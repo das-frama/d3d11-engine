@@ -33,6 +33,10 @@ void window_set_title(const char* title) {
     win32_set_title(title);
 }
 
+rect window_screen_area() {
+    return win32_client_rect();
+}
+
 void window_show_mouse(bool show) {
     win32_show_mouse(show);
 }

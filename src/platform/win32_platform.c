@@ -77,6 +77,14 @@ void win32_size(int *w, int *h) {
     *h = (int) rc.bottom - (int) rc.top;
 }
 
+rect win32_client_rect() {
+    RECT rc = {0};
+    GetClientRect(g_window, &rc);
+    ClientToScreen(g_window, (LPPOINT)&rc.left);
+    ClientToScreen(g_window, (LPPOINT)&rc.right);
+    return rect_new(rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top);
+}
+
 void win32_process_messages() {
     MSG msg;
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) > 0) {

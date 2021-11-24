@@ -5,9 +5,16 @@
 
 #include "renderer/d3d11_renderer.h"
 
+typedef enum {
+	TOPOLOGY_NONE,
+	TOPOLOGY_TRIANGLE_LIST,
+	TOPOLOGY_LINE_LIST,
+} draw_topology;
+
 typedef struct {
 	d3d11_vertex_buffer* vb;
 	d3d11_index_buffer* ib;
+	draw_topology topology;
 } mesh;
 
 typedef struct {

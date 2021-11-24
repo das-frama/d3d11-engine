@@ -4,17 +4,6 @@
 #include "window.h"
 #include "graphics.h"
 
-__declspec(align(16))
-typedef struct {
-    mat4 world;
-    mat4 view;
-    mat4 proj;
-    vec4 light_direction;
-    vec4 camera_position;
-    vec4 light_position;
-    float light_radius;
-} constant;
-
 extern bool win32_should_quit;
 static bool g_play_mode = false;
 

@@ -87,10 +87,10 @@ mat4 mat4_rotate(float x, float y, float z) {
 mat4 mat4_rotate_x(float x) {
     mat4 m = mat4_id();
 
-    m.mat[1][1] = cos(x);
-    m.mat[1][2] = sin(x);
-    m.mat[2][1] = -sin(x);
-    m.mat[2][2] = cos(x);
+    m.mat[1][1] = cosf(x);
+    m.mat[1][2] = sinf(x);
+    m.mat[2][1] = -sinf(x);
+    m.mat[2][2] = cosf(x);
 
     return m;
 }
@@ -98,10 +98,10 @@ mat4 mat4_rotate_x(float x) {
 mat4 mat4_rotate_y(float y) {
     mat4 m = mat4_id();
 
-    m.mat[0][0] = cos(y);
-    m.mat[0][2] = -sin(y);
-    m.mat[2][0] = sin(y);
-    m.mat[2][2] = cos(y);
+    m.mat[0][0] = cosf(y);
+    m.mat[0][2] = -sinf(y);
+    m.mat[2][0] = sinf(y);
+    m.mat[2][2] = cosf(y);
 
     return m;
 }
@@ -109,10 +109,10 @@ mat4 mat4_rotate_y(float y) {
 mat4 mat4_rotate_z(float z) {
     mat4 m = mat4_id();
 
-    m.mat[0][0] = cos(z);
-    m.mat[0][1] = sin(z);
-    m.mat[1][0] = -sin(z);
-    m.mat[1][1] = cos(z);
+    m.mat[0][0] = cosf(z);
+    m.mat[0][1] = sinf(z);
+    m.mat[1][0] = -sinf(z);
+    m.mat[1][1] = cosf(z);
 
     return m;
 }
@@ -262,6 +262,44 @@ vec3 mat4_y_direction(mat4 m) {
 
 vec3 mat4_x_direction(mat4 m) {
     return vec3_new(m.mat[0][0], m.mat[0][1], m.mat[0][2]);
+}
+
+mat4 mat4_from_quat(quat q) {
+    float x2 = q.x + q.x; 
+    float y2 = q.y + q.y; 
+    float z2 = q.z + q.z;
+    float xx = q.x * x2;  
+    float yy = q.y * y2;  
+    float wx = q.w * x2;  
+    float xy = q.x * y2;   
+    float yz = q.y * z2;   
+    float wy = q.w * y2;
+    float xz = q.x * z2;
+    float zz = q.z * z2;  
+    float wz = q.w * z2;
+
+    mat4 m = {0};
+    m.mat[0][0] = 1.0f - ( yy + zz );
+    m.mat[0][1] = xy - wz;
+    m.mat[0][2] = xz + wy;
+    m.mat[0][3] = 0;
+
+    m.mat[1][0] = xy + wz;
+    m.mat[1][1] = 1.0f - ( xx + zz );
+    m.mat[1][2] = yz - wx;
+    m.mat[1][3] = 0;
+
+    m.mat[2][0] = xz - wy;
+    m.mat[2][1] = yz + wx;
+    m.mat[2][2] = 1.0f - ( xx + yy );
+    m.mat[2][3] = 0;
+
+    m.mat[3][0] = 0;
+    m.mat[3][1] = 0;
+    m.mat[3][2] = 0;
+    m.mat[3][3] = 1;
+  
+    return m;
 }
 
 void mat4_print(const mat4* m) {

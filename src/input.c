@@ -11,21 +11,31 @@ void input_update() {
 	// Update mouse.
 	vec2 cur_pos = win32_mouse_pos();
 
-	if (cur_pos.x != g_input.mouse.x || cur_pos.y != g_input.mouse.y) {
-		g_input.mouse.has_movement = true;
-	} else {
-		g_input.mouse.has_movement = false;
+	if (!g_input.is_init) {
+		g_input.mouse.x = cur_pos.x;
+ 		g_input.mouse.y = cur_pos.y;
+ 		g_input.is_init = true;
 	}
 
-	g_input.mouse.x = cur_pos.x;
-	g_input.mouse.y = cur_pos.y;
+	if (cur_pos.x != g_input.mouse.x || cur_pos.y != g_input.mouse.y) {
+		g_input.mouse.has_movement = true;
+		g_input.mouse.dx = cur_pos.x - g_input.mouse.x;
+		g_input.mouse.dy = cur_pos.y - g_input.mouse.y;
+	} else {
+		g_input.mouse.has_movement = false;
+		g_input.mouse.dx = 0;
+		g_input.mouse.dy = 0;
+	}
 
 	if (g_input.enabled) {
-		int w = 0, h = 0;
-		win32_size(&w, &h);
-		float x = w / 2.0f;
-		float y = h / 2.0f;
+		float x = g_input.screen_area.left + g_input.screen_area.width / 2.0f;
+		float y = g_input.screen_area.top + g_input.screen_area.height / 2.0f;
 		win32_set_mouse_pos(x, y);
+		g_input.mouse.x = x;
+		g_input.mouse.y = y;
+	} else {
+		g_input.mouse.x = cur_pos.x;
+		g_input.mouse.y = cur_pos.y;
 	}
 
 	// Update keyboard.
@@ -70,6 +80,10 @@ input* input_get() {
 
 void input_enable(bool enable) {
 	g_input.enabled = enable;
+}
+
+void input_set_screen_area(rect r) {
+	g_input.screen_area = r;
 }
 
 bool input_key_pressed(uchar key_code) {
