@@ -69,6 +69,9 @@ void entity_close(void);
 entity_id entity_create();
 void entity_remove(entity_id id);
 
+// int entity_register_system(void (*user_system)());
+// void entity_unregister_system(int);
+
 void entity_add_transform(entity_id id, vec3 pos, vec3 scale, quat rot);
 void entity_add_movement(entity_id id, vec3 velocity);
 void entity_add_renderable(entity_id id, mesh* mesh, material* mat);

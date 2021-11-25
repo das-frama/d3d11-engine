@@ -65,3 +65,7 @@ void graphics_present() {
     // Swap buffers.
     d3d11_present(true);
 }
+
+void graphics_switch_fill_mode() {
+    g_mode = (g_mode == FILL_MODE_SOLID) ? FILL_MODE_WIREFRAME : FILL_MODE_SOLID;
+}

@@ -46,6 +46,7 @@ typedef unsigned char byte;
 void frame_begin(void);
 void frame_end(void);
 float frame_dt(void);
+float frame_total_time(void);
 
 /* Macroces. */
 #define to_rad(n) (n * 0.017453f)

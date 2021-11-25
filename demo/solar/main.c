@@ -17,14 +17,13 @@ typedef struct {
 
 static user_component_list g_components = {0};
 
-
 void create_sphere() {
     entity_id id = entity_create();
 
     planet_component pc = {0};
     pc.key = id;
     pc.distance = rand() % 100;
-    pc.orb_period = 0.39f;
+    pc.orb_period = rand() % 5 + 1;
     hmputs(g_components.planets, pc);
     // Generate and set sphere mesh.
     if (g_mesh == NULL) {
@@ -72,7 +71,6 @@ int main() {
     g_components.planets = NULL;
 
     // Main game loop.
-    float planet_time = 0.0f;
     while (!game_should_quit()) {
         frame_begin();
 
@@ -90,12 +88,14 @@ int main() {
         if (input_key_released(32)) {
             create_sphere();
         }
+        if (input_key_released('R')) {
+            graphics_switch_fill_mode();
+        }
 
         // Draw.
         graphics_clear(0.0f, 0.0f, 0.0f, 1.0f);
-        spheres_rotation_system(planet_time);
+        spheres_rotation_system(frame_total_time());
         entity_system_update(); 
-        planet_time += 0.005f;
         graphics_present();
         frame_end();
     }

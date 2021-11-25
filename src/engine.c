@@ -17,6 +17,7 @@ static uint frame_end_time = 0;
 static const float frame_update_rate = 0.5f;
 static short frame_counter = 0;
 static float frame_acc_time = 0.0f;
+static double frame_global_time = 0.0f;
 
 void frame_begin() {
     frame_start_time = GetTickCount64();
@@ -27,6 +28,7 @@ void frame_end() {
 
     frame_delta_time = ((float) (frame_end_time - frame_start_time) / 1000.0f);
     frame_acc_time += frame_delta_time;
+    frame_global_time += frame_delta_time;
     frame_counter++;
 
     if (frame_acc_time > frame_update_rate) {
@@ -38,8 +40,12 @@ void frame_end() {
     sprintf(frame_rate_string_var, "%i", frame_rate_var);
 }
 
-float frame_dt(void) {
+float frame_dt() {
     return frame_delta_time;
+}
+
+float frame_total_time() {
+    return frame_global_time;
 }
 
 const char* file_ext(const char* filename) {

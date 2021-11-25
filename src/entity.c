@@ -18,7 +18,6 @@ void entity_init() {
     g_components.renderables = NULL;
     g_components.cameras = NULL;
     g_components.players = NULL;
-    g_components.players = NULL;
 }
 
 void entity_close() {

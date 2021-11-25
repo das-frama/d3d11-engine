@@ -18,4 +18,6 @@ void graphics_clear(float r, float g, float b, float a);
 void graphics_draw(mesh* mesh, material* mat);
 void graphics_present(void);
 
+void graphics_switch_fill_mode();
+
 #endif // MOTOR_GRAPHICS_H
