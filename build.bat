@@ -32,7 +32,7 @@ IF %flag_s%==1 (
 
 
 REM Compile engine.
-set engine_sources=..\src\*.c ..\src\utils\*.c ..\src\platform\*.c ..\src\renderer\*.c ..\src\math\*.c ..\src\assets\*.c ..\src\entities\*.c
+set engine_sources=..\src\*.c ..\src\editor\*.c ..\src\utils\*.c ..\src\platform\*.c ..\src\renderer\*.c ..\src\math\*.c ..\src\assets\*.c ..\src\entities\*.c
 set engine_warnings_to_ignore=/wd4201 /wd4116 /wd4101 /wd4103 /wd4081 /wd4204 /wd4255 /wd4668 /wd4820 /wd4100 /wd4189 /wd4711 /wd4710 /wd4101 /wd4296 /wd4311 /wd4115 /wd4702 /wd4456 /wd4555
 set engine_flags=/c /EHsc /nologo /Zi /FC /W1 %engine_warnings_to_ignore% 
 set engine_libs=user32.lib dxgi.lib d3d11.lib D3DCompiler.lib dxguid.lib

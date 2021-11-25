@@ -22,8 +22,8 @@ void create_sphere() {
 
     planet_component pc = {0};
     pc.key = id;
-    pc.distance = rand() % 100;
-    pc.orb_period = rand() % 5 + 1;
+    pc.distance = rand() % 200;
+    pc.orb_period = (float)rand()/(float)(RAND_MAX/2.0f);
     hmputs(g_components.planets, pc);
     // Generate and set sphere mesh.
     if (g_mesh == NULL) {
@@ -56,8 +56,9 @@ void spheres_rotation_system(float dt) {
     }
 }
 
+
 int main() {
-    motor_init("My Game", 1920, 1080);
+    motor_init("My Game", 2048, 1152);
 
     // Entities.
     entity_id player = entity_create();
@@ -76,7 +77,7 @@ int main() {
 
         // Update window events.
         window_events();
-        
+
         // Update input.
         input_update();
         if (input_key_released('G')) {
@@ -91,11 +92,13 @@ int main() {
         if (input_key_released('R')) {
             graphics_switch_fill_mode();
         }
+        editor_update();
 
         // Draw.
         graphics_clear(0.0f, 0.0f, 0.0f, 1.0f);
         spheres_rotation_system(frame_total_time());
         entity_system_update(); 
+        editor_draw();
         graphics_present();
         frame_end();
     }

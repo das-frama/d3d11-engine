@@ -17,7 +17,7 @@ void input_update() {
  		g_input.is_init = true;
 	}
 
-	if (cur_pos.x != g_input.mouse.x || cur_pos.y != g_input.mouse.y) {
+	if (g_input.enabled && (cur_pos.x != g_input.mouse.x || cur_pos.y != g_input.mouse.y)) {
 		g_input.mouse.has_movement = true;
 		g_input.mouse.dx = cur_pos.x - g_input.mouse.x;
 		g_input.mouse.dy = cur_pos.y - g_input.mouse.y;

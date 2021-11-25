@@ -1,5 +1,6 @@
 #include "window.h"
 
+#include "editor/editor.h"
 #include "platform/win32_platform.h"
 
 void window_init() {
@@ -46,5 +47,7 @@ void window_set_mouse_pos(float x, float y) {
 }
 
 void window_events() {
+    editor_input_begin();
     win32_process_messages();
+    editor_input_end();
 }

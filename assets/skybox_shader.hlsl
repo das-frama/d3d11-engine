@@ -45,8 +45,9 @@ struct PS_INPUT
 
 float4 psmain(PS_INPUT input) : SV_TARGET
 {
-    float4 color = float4(0,0,1,1);
-    float4 color1 = float4(1,0,0,1);
+    // #D7DDE8 #757F9A
+    float4 color = float4(0.459,0.498,0.604, 1);
+    float4 color1 = float4(0.843,0.867,0.91,1);
     return float4(lerp(color, color1, input.texcoord.y));
     // return float4(color1);
 }

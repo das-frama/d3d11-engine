@@ -6,7 +6,7 @@ void motor_init(const char* title, int w, int h) {
     window_create(w, h);
 
 	log("Init graphics...");
-	graphics_init(w, h);
+	graphics_init();
 
     // Setup window.
     log("Show window...");
@@ -18,10 +18,16 @@ void motor_init(const char* title, int w, int h) {
     log("Init entity system...");
     entity_init();
 
+    log("Init editor...");
+    editor_init();
+
     game_start();
 }
 
 void motor_close() {
+    log("Closing editor...");
+    editor_close();
+
     log("Closing entity system...");
     entity_close();
 

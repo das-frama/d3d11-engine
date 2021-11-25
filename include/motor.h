@@ -9,7 +9,8 @@
 #include "game.h"
 #include "entity.h"
 
-// #include "assets/renderable.h"
+#include "editor/editor.h"
+
 #include "assets/mesh.h"
 #include "assets/texture.h"
 #include "assets/material.h"

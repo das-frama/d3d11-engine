@@ -3,15 +3,15 @@
 #include "assets/mesh.h"
 #include "assets/material.h"
 #include "renderer/d3d11_renderer.h"
+#include "platform/win32_platform.h"
 
 static fill_mode g_mode = FILL_MODE_SOLID;
+static int g_client_width = 0;
+static int g_client_height = 0;
 
-void graphics_init(int w, int h) {
-    // Init d3d11.
-    d3d11_init(w, h);
-
-    // Set vieport size.
-    d3d11_set_viewport_size(w, h);
+void graphics_init() {
+    win32_size(&g_client_width, &g_client_height);
+    d3d11_init(g_client_width, g_client_height);
 }
 
 void graphics_close() {
@@ -20,6 +20,7 @@ void graphics_close() {
 
 void graphics_clear(float r, float g, float b, float a) {
     d3d11_clear_render_target_color(r, g, b, a);
+    d3d11_set_viewport_size(g_client_width-600, g_client_height-300, 250, 0);
 }
 
 void graphics_draw(mesh* mesh, material* mat) {

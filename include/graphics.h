@@ -11,7 +11,7 @@ typedef enum {
     FILL_MODE_WIREFRAME,
 } fill_mode;
 
-void graphics_init(int w, int h);
+void graphics_init();
 void graphics_close(void);
 
 void graphics_clear(float r, float g, float b, float a);

@@ -1,5 +1,15 @@
 #include "platform/win32_platform.h"
 
+#define NK_INCLUDE_FIXED_TYPES
+#define NK_INCLUDE_STANDARD_IO
+#define NK_INCLUDE_STANDARD_VARARGS
+#define NK_INCLUDE_DEFAULT_ALLOCATOR
+#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+#define NK_INCLUDE_FONT_BAKING
+#define NK_INCLUDE_DEFAULT_FONT
+#include "vendor/nuklear.h"
+#include "vendor/nuklear_d3d11.h"
+
 bool win32_should_quit = false;
 
 //static MSG g_msg;
@@ -12,12 +22,16 @@ static LRESULT CALLBACK wnd_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             win32_should_quit = true;
             PostQuitMessage(0);
             break;
-
-        default:
-            return DefWindowProc(hwnd, msg, wparam, lparam);
+        case WM_SIZE:
+            // if (IsWindow(g_window)) d3d11_reload_buffers();
+            break;
     }
 
-    return 0;
+    if (nk_d3d11_handle_event(hwnd, msg, wparam, lparam)) {
+        return 0;
+    }
+
+    return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
 void win32_init() {

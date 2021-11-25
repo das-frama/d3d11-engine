@@ -96,17 +96,19 @@ void d3d11_create_swap_chain(int w, int h) {
     // Create swap chain.
     DXGI_SWAP_CHAIN_DESC desc;
     ZeroMemory(&desc, sizeof(DXGI_SWAP_CHAIN_DESC));
-    desc.BufferCount = 1;
     desc.BufferDesc.Width = w;
     desc.BufferDesc.Height = h;
     desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    desc.BufferDesc.Scaling = DXGI_MODE_SCALING_STRETCHED;
+    // desc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
     desc.BufferDesc.RefreshRate.Numerator = 60;
     desc.BufferDesc.RefreshRate.Denominator = 1;
     desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     desc.OutputWindow = win32_window();
+    desc.BufferCount = 2;
     desc.SampleDesc.Count = 1;
     desc.SampleDesc.Quality = 0;
-    desc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+    desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
     desc.Windowed = 1;
 
@@ -172,6 +174,16 @@ void d3d11_create_blend_state(void) {
     ID3D11DeviceContext_OMSetBlendState(g_imm_context, g_blend_state, blend_factor, mask);
 }
 
+void d3d11_update_buffers() {
+    SAFE_RELEASE(ID3D11RenderTargetView, g_rtv);
+    SAFE_RELEASE(ID3D11RenderTargetView, g_dsv);
+
+    int w, h;
+    win32_size(&w, &h);
+    IDXGISwapChain_ResizeBuffers(g_swap_chain, 1, w, h, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+    d3d11_reload_buffers(w, h);
+}
+
 void d3d11_reload_buffers(int w, int h) {
     ID3D11Texture2D* buffer = NULL;
     HRESULT hr = IDXGISwapChain_GetBuffer(g_swap_chain, 0, &IID_ID3D11Texture2D, (void **)&buffer);
@@ -188,7 +200,7 @@ void d3d11_reload_buffers(int w, int h) {
     D3D11_TEXTURE2D_DESC tex_desc;
     ZeroMemory(&tex_desc, sizeof(D3D11_TEXTURE2D_DESC));
     tex_desc.Width = w;
-    tex_desc.Height = w;
+    tex_desc.Height = h;
     tex_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
     tex_desc.Usage = D3D11_USAGE_DEFAULT;
     tex_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
@@ -234,12 +246,18 @@ void d3d11_clear_render_target_color(float r, float g, float b, float a) {
     ID3D11DeviceContext_OMSetRenderTargets(g_imm_context, 1, &g_rtv, g_dsv);
 }
 
-void d3d11_set_viewport_size( int w, int h) {
+void d3d11_reset_render_target() {
+    ID3D11DeviceContext_OMSetRenderTargets(g_imm_context, 1, &g_rtv, NULL);
+}
+
+void d3d11_set_viewport_size(int w, int h, int x, int y) {
     D3D11_VIEWPORT vp = {0};
     vp.Width = (float) w;
     vp.Height = (float) h;
     vp.MinDepth = 0.0f;
     vp.MaxDepth = 1.0f;
+    vp.TopLeftX = (float) x;
+    vp.TopLeftY = (float) y;
 
 	ID3D11DeviceContext_RSSetViewports(g_imm_context, 1, &vp);
 }
@@ -551,4 +569,16 @@ void d3d11_draw_triangle_strip(size_t vertex_count, size_t start_vertex_index) {
 void d3d11_draw_indexed_line_list(size_t index_count, size_t start_index_location, size_t start_vertex_index) {
     ID3D11DeviceContext_IASetPrimitiveTopology(g_imm_context, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
     ID3D11DeviceContext_DrawIndexed(g_imm_context, index_count, start_index_location, start_vertex_index);
+}
+
+ID3D11Device* d3d11_device() {
+    return g_d3d_device;
+}
+
+ID3D11DeviceContext* d3d11_context() {
+    return g_imm_context;
+}
+
+ID3D11RenderTargetView* d3d11_rtv() {
+    return g_rtv;
 }

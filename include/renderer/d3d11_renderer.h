@@ -41,10 +41,12 @@ void d3d11_create_swap_chain(int w, int h);
 void d3d11_create_blend_state(void);
 
 // Buffers.
+void d3d11_update_buffers();
 void d3d11_reload_buffers(int w, int h);
 void d3d11_set_rasterizer_state(rasterizer_state rstate);
 void d3d11_clear_render_target_color(float r, float g, float b, float a);
-void d3d11_set_viewport_size(int w, int h);
+void d3d11_reset_render_target();
+void d3d11_set_viewport_size(int w, int h, int x, int y);
 void d3d11_present(bool vsync);
 
 // Vertex and Pixel shader.
@@ -82,5 +84,10 @@ void d3d11_set_ps_texture(const d3d11_texture** textures, size_t texture_count);
 void d3d11_draw_indexed_triangle_list(size_t index_count, size_t start_index_location, size_t start_vertex_index);
 void d3d11_draw_triangle_strip(size_t vertex_count, size_t start_vertex_index);
 void d3d11_draw_indexed_line_list(size_t index_count, size_t start_index_location, size_t start_vertex_index);
+
+// Gets.
+ID3D11Device* d3d11_device();
+ID3D11DeviceContext* d3d11_context();
+ID3D11RenderTargetView* d3d11_rtv();
 
 #endif // MOTOR_D3D11_RENDERER
