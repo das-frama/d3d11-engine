@@ -12,6 +12,7 @@ static int g_client_height = 0;
 void graphics_init() {
     win32_size(&g_client_width, &g_client_height);
     d3d11_init(g_client_width, g_client_height);
+    d3d11_set_viewport_size(g_client_width, g_client_height, 0, 0);
 }
 
 void graphics_close() {
@@ -20,10 +21,10 @@ void graphics_close() {
 
 void graphics_clear(float r, float g, float b, float a) {
     d3d11_clear_render_target_color(r, g, b, a);
-    d3d11_set_viewport_size(g_client_width-600, g_client_height-300, 250, 0);
 }
 
 void graphics_draw(mesh* mesh, material* mat) {
+    // d3d11_set_viewport_size(g_client_width-600, g_client_height-300, 250, 0);
     // Set object rasterizer state.
     if (g_mode == FILL_MODE_SOLID) {
         d3d11_set_rasterizer_state(mat->mode);

@@ -10,6 +10,8 @@
 #define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
 #define NK_INCLUDE_FONT_BAKING
 #define NK_INCLUDE_DEFAULT_FONT
+#define NK_IMPLEMENTATION
+#define NK_D3D11_IMPLEMENTATION
 #include "vendor/nuklear.h"
 #include "vendor/nuklear_d3d11.h"
 #include "vendor/nuklear_style.c"
@@ -25,7 +27,7 @@ static int g_client_width = 0;
 static int g_client_height = 0;
 
 void editor_init() {
-        ID3D11Device* device = d3d11_device();
+    ID3D11Device* device = d3d11_device();
 
     win32_size(&g_client_width, &g_client_height);
     g_ctx = nk_d3d11_init(device, g_client_width, g_client_height, MAX_VERTEX_BUFFER, MAX_INDEX_BUFFER);

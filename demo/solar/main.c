@@ -59,6 +59,7 @@ void spheres_rotation_system(float dt) {
 
 int main() {
     motor_init("My Game", 2048, 1152);
+    // editor_init();
 
     // Entities.
     entity_id player = entity_create();
@@ -80,6 +81,7 @@ int main() {
 
         // Update input.
         input_update();
+        // editor_update();
         if (input_key_released('G')) {
             game_switch_playmode();
         }
@@ -92,19 +94,19 @@ int main() {
         if (input_key_released('R')) {
             graphics_switch_fill_mode();
         }
-        editor_update();
 
         // Draw.
         graphics_clear(0.0f, 0.0f, 0.0f, 1.0f);
         spheres_rotation_system(frame_total_time());
         entity_system_update(); 
-        editor_draw();
+        // editor_draw();
         graphics_present();
         frame_end();
     }
 
     skybox_delete(skybox);
     grid_delete(grid);
+    // editor_close();
     motor_close();
 
     return EXIT_SUCCESS;

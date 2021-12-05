@@ -9,18 +9,6 @@
 #define TINYOBJ_LOADER_C_IMPLEMENTATION
 #include "vendor/tinyobj_loader_c.h"
 
-#define NK_INCLUDE_FIXED_TYPES
-#define NK_INCLUDE_STANDARD_IO
-#define NK_INCLUDE_STANDARD_VARARGS
-#define NK_INCLUDE_DEFAULT_ALLOCATOR
-#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
-#define NK_INCLUDE_FONT_BAKING
-#define NK_INCLUDE_DEFAULT_FONT
-#define NK_IMPLEMENTATION
-#define NK_D3D11_IMPLEMENTATION
-#include "vendor/nuklear.h"
-#include "vendor/nuklear_d3d11.h"
-
 static char frame_rate_string_var[12];
 static int frame_rate_var = 0;
 static float frame_delta_time = 0.0f;

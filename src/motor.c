@@ -18,15 +18,15 @@ void motor_init(const char* title, int w, int h) {
     log("Init entity system...");
     entity_init();
 
-    log("Init editor...");
-    editor_init();
+    // log("Init editor...");
+    // editor_init();
 
     game_start();
 }
 
 void motor_close() {
-    log("Closing editor...");
-    editor_close();
+    // log("Closing editor...");
+    // editor_close();
 
     log("Closing entity system...");
     entity_close();
