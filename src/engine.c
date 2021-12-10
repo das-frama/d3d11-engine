@@ -48,6 +48,16 @@ float frame_total_time() {
     return frame_global_time;
 }
 
+filepath fp(const char* filename) {
+    filepath fp;
+    bool ok = GetFullPathNameA(filename, PATH_MAX, fp.buf, NULL);
+    if (!ok) {
+        error("GetFullPathName %d", GetLastError());
+    }
+
+    return fp;
+}
+
 const char* file_ext(const char* filename) {
     return strrchr(filename, '.') + 1;
 }
@@ -67,14 +77,6 @@ const char* file_abs(const char* filename) {
     strcpy_s(res, str_size, buf);
 
     return res;
-}
-
-const wchar_t* to_wch(const char *c) {
-    const size_t c_size = strlen(c) + 1;
-    wchar_t* wc = malloc(sizeof(wchar_t) * c_size);
-    mbstowcs(wc, c, c_size);
-
-    return wc;
 }
 
 void* file_load_win32(const char* filename, size_t* len) {
@@ -97,4 +99,12 @@ void* file_load_win32(const char* filename, size_t* len) {
     CloseHandle(file);
 
     return (void*)fmap_view;
+}
+
+const wchar_t* to_wch(const char *c) {
+    const size_t c_size = strlen(c) + 1;
+    wchar_t* wc = malloc(sizeof(wchar_t) * c_size);
+    mbstowcs(wc, c, c_size);
+
+    return wc;
 }

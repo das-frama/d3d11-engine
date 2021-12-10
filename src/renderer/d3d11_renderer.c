@@ -561,14 +561,14 @@ void d3d11_draw_indexed_triangle_list(
     ID3D11DeviceContext_DrawIndexed(g_imm_context, index_count, start_index_location, start_vertex_index);
 }
 
-void d3d11_draw_triangle_strip(size_t vertex_count, size_t start_vertex_index) {
-    ID3D11DeviceContext_IASetPrimitiveTopology(g_imm_context, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-    ID3D11DeviceContext_Draw(g_imm_context, vertex_count, start_vertex_index);
-}
-
 void d3d11_draw_indexed_line_list(size_t index_count, size_t start_index_location, size_t start_vertex_index) {
     ID3D11DeviceContext_IASetPrimitiveTopology(g_imm_context, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
     ID3D11DeviceContext_DrawIndexed(g_imm_context, index_count, start_index_location, start_vertex_index);
+}
+
+void d3d11_draw_triangle_strip(size_t vertex_count, size_t start_vertex_index) {
+    ID3D11DeviceContext_IASetPrimitiveTopology(g_imm_context, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+    ID3D11DeviceContext_Draw(g_imm_context, vertex_count, start_vertex_index);
 }
 
 ID3D11Device* d3d11_device() {

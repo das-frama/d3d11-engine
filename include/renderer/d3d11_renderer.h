@@ -82,8 +82,8 @@ void d3d11_set_ps_texture(const d3d11_texture** textures, size_t texture_count);
 
 // Draw
 void d3d11_draw_indexed_triangle_list(size_t index_count, size_t start_index_location, size_t start_vertex_index);
-void d3d11_draw_triangle_strip(size_t vertex_count, size_t start_vertex_index);
 void d3d11_draw_indexed_line_list(size_t index_count, size_t start_index_location, size_t start_vertex_index);
+void d3d11_draw_triangle_strip(size_t vertex_count, size_t start_vertex_index);
 
 // Gets.
 ID3D11Device* d3d11_device();

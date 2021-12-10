@@ -7,6 +7,7 @@
 #include <string.h>  // strcpy, strcat
 #include <assert.h>  // assert
 #include <stdbool.h> // bool
+#include <stdint.h>  // for short aliases
 // #include <tgmath.h>
 #include <math.h> // cos, sin, pow
 
@@ -42,6 +43,23 @@ typedef unsigned int  uint;
 typedef unsigned char uchar;
 typedef unsigned char byte;
 
+typedef int8_t s8;
+typedef uint8_t u8;
+typedef int16_t s16;
+typedef uint16_t u16;
+typedef int32_t s32;
+typedef uint32_t u32;
+typedef int64_t s64;
+typedef uint64_t u64;
+typedef float f32;
+typedef double f64;
+typedef bool b8;
+
+/* Common structs. */
+typedef struct {
+    char buf[PATH_MAX];
+} filepath;
+
 /* Engine core. */
 void frame_begin(void);
 void frame_end(void);
@@ -52,6 +70,7 @@ float frame_total_time(void);
 #define to_rad(n) (n * 0.017453f)
 
 /* File Helpers. */
+filepath fp(const char* filename);
 const char* file_ext(const char* filename);
 bool file_ext_eq(const char* filename, const char* ext2);
 const char* file_abs(const char* path);

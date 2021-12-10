@@ -72,6 +72,9 @@ int main() {
 
     g_components.planets = NULL;
 
+    // Font load.
+    ui_font* font = ui_font_load("assets/fonts/ubuntu_mono.fnt");
+
     // Main game loop.
     while (!game_should_quit()) {
         frame_begin();
@@ -106,6 +109,7 @@ int main() {
 
     skybox_delete(skybox);
     grid_delete(grid);
+    ui_font_delete(font);
     // editor_close();
     motor_close();
 

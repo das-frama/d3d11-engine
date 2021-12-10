@@ -8,6 +8,7 @@
 #include "input.h"
 #include "game.h"
 #include "entity.h"
+// #include "ui.h"
 
 #include "editor/editor.h"
 
@@ -15,6 +16,8 @@
 #include "assets/texture.h"
 #include "assets/material.h"
 #include "assets/shader.h"
+
+#include "ui/ui_font.h"
 
 // #include "entities/light.h"
 // #include "entities/camera.h"
